@@ -1,7 +1,25 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Menu, X, Facebook, Instagram, Linkedin, Mail, Smartphone } from "lucide-react";
+
+// Add type declaration for google translate functionality
+declare global {
+  interface Window {
+    googleTranslateElementInit: () => void;
+    google: {
+      translate: {
+        TranslateElement: {
+          InlineLayout: {
+            HORIZONTAL: number;
+          };
+          new (config: any, element: string): any;
+        };
+      };
+    };
+  }
+}
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -29,10 +47,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     document.body.appendChild(script);
 
     window.googleTranslateElementInit = function() {
-      new (window as any).google.translate.TranslateElement({
+      new window.google.translate.TranslateElement({
         pageLanguage: 'pt',
         includedLanguages: 'pt,es,en,ja',
-        layout: (window as any).google.translate.TranslateElement.InlineLayout.HORIZONTAL
+        layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL
       }, 'google_translate_element');
     };
     
@@ -48,27 +66,29 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <style jsx global>{`
-        :root {
-          --color-white: #ffffff;
-          --color-teal-light: #5e9188;
-          --color-teal-dark: #3e5954;
-          --color-navy: #253342;
-          --color-dark: #232226;
-        }
-        .goog-te-gadget {
-          color: transparent !important;
-        }
-        .goog-te-gadget .goog-te-combo {
-          color: black;
-          border-radius: 4px;
-          padding: 2px;
-          border: 1px solid #ccc;
-        }
-        .VIpgJd-ZVi9od-l4eHX-hSRGPd {
-          display: none;
-        }
-      `}</style>
+      <style>
+        {`
+          :root {
+            --color-white: #ffffff;
+            --color-teal-light: #5e9188;
+            --color-teal-dark: #3e5954;
+            --color-navy: #253342;
+            --color-dark: #232226;
+          }
+          .goog-te-gadget {
+            color: transparent !important;
+          }
+          .goog-te-gadget .goog-te-combo {
+            color: black;
+            border-radius: 4px;
+            padding: 2px;
+            border: 1px solid #ccc;
+          }
+          .VIpgJd-ZVi9od-l4eHX-hSRGPd {
+            display: none;
+          }
+        `}
+      </style>
 
       <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
         <div className="container mx-auto px-4 py-2 flex justify-between items-center">
