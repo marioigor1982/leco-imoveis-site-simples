@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -71,45 +70,42 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         }
       `}</style>
 
-      <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#253342]/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
+        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
           <Link to="/" className="flex items-center gap-3">
             <img 
               src="/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png" 
               alt="Leandro Corretor"
-              className="w-12 h-12 rounded-full object-cover border-2 border-[#5e9188]"
+              className="w-16 h-16 rounded-full object-cover border-2 border-[#5e9188]"
             />
-            <div className="text-white hidden md:block">
-              <h1 className="font-bold text-sm leading-tight">Leandro Buscarioli Colares</h1>
-              <p className="text-xs text-[#5e9188]">CRECI-SP 283775F</p>
-            </div>
           </Link>
           
           <div className="hidden md:flex space-x-6 items-center">
             <Link 
               to="/" 
-              className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-white' : 'text-white'} ${location.pathname === '/' ? 'text-[#5e9188]' : ''}`}
+              className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-gray-700' : 'text-white'}`}
             >
               Home
             </Link>
             <Link 
               to="/sobre" 
-              className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-white' : 'text-white'} ${location.pathname === '/sobre' ? 'text-[#5e9188]' : ''}`}
+              className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-gray-700' : 'text-white'}`}
             >
               Sobre Mim
             </Link>
             <Link 
               to="/financiamento" 
-              className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-white' : 'text-white'} ${location.pathname === '/financiamento' ? 'text-[#5e9188]' : ''}`}
+              className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-gray-700' : 'text-white'}`}
             >
               Financiamento
             </Link>
-            <div className={`text-sm ${scrolled ? 'text-[#5e9188]' : 'text-white/80'}`}>
-              Visitas: {visitas}
+            <div className="flex items-center space-x-2">
+              <span className={`text-sm ${scrolled ? 'text-gray-700' : 'text-white/80'}`}>
+                Visitas: {visitas}
+              </span>
+              <div id="google_translate_element" className="ml-4"></div>
             </div>
           </div>
-
-          <div id="google_translate_element" className="hidden md:block absolute top-4 right-20 z-50"></div>
           
           <button 
             className="md:hidden text-white focus:outline-none"

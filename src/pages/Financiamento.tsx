@@ -7,7 +7,7 @@ export default function Financiamento() {
   const bancos = [
     {
       nome: "Caixa Econômica Federal",
-      logo: "https://logodownload.org/wp-content/uploads/2014/05/caixa-logo-1.png",
+      logo: "https://logodownload.org/wp-content/uploads/2014/05/caixa-logo-0.png",
       link: "https://habitacao.caixa.gov.br/siopiweb-web/simulaOperacaoInternet.do?method=inicializarCasoUso"
     },
     {
@@ -22,12 +22,12 @@ export default function Financiamento() {
     },
     {
       nome: "Bradesco",
-      logo: "https://logodownload.org/wp-content/uploads/2014/10/bradesco-logo.png",
+      logo: "https://logodownload.org/wp-content/uploads/2014/10/bradesco-logo-2.png",
       link: "https://banco.bradesco/html/classic/produtos-servicos/emprestimo-e-financiamento/encontre-seu-credito/simuladores-imoveis.shtm"
     },
     {
       nome: "Santander",
-      logo: "https://logodownload.org/wp-content/uploads/2014/09/santander-logo.png",
+      logo: "https://logodownload.org/wp-content/uploads/2014/09/santander-logo-2.png",
       link: "https://www.santander.com.br/atendimento-para-voce/simuladores/simulador-credito-imobiliário"
     }
   ];
@@ -92,13 +92,13 @@ export default function Financiamento() {
               href={banco.link}
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 flex flex-col items-center"
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1 flex flex-col items-center justify-center"
             >
-              <div className="h-20 flex items-center justify-center mb-4">
+              <div className="h-24 flex items-center justify-center mb-4">
                 <img 
                   src={banco.logo} 
                   alt={banco.nome}
-                  className="max-h-16 max-w-full"
+                  className="max-h-20 max-w-full object-contain"
                 />
               </div>
               <h3 className="text-lg font-semibold text-[#253342] mb-2 text-center">
