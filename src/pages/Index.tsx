@@ -1,6 +1,5 @@
 
 import BackgroundSlideshow from '@/components/BackgroundSlideshow';
-import PropertiesShowcase from '@/components/PropertiesShowcase';
 import { ArrowRight } from 'lucide-react';
 
 export default function Index() {
@@ -11,7 +10,7 @@ export default function Index() {
         <BackgroundSlideshow />
         <div className="relative z-20 text-center px-4">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Encontre o Imóvel dos Seus Sonhos
+            O sonho da casa própria nunca foi tão fácil de realizar!
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
             Especialista em imóveis na região do ABC Paulista
@@ -27,9 +26,6 @@ export default function Index() {
           </a>
         </div>
       </div>
-
-      {/* Properties Section */}
-      <PropertiesShowcase />
     </div>
   );
 }
