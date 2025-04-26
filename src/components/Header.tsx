@@ -15,7 +15,7 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
   const location = useLocation();
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
+    <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-[#1A1F2C]'}`}>
       <div className="container mx-auto px-4 py-2 flex justify-between items-center">
         <Link to="/" className="flex items-center gap-3">
           <img 
