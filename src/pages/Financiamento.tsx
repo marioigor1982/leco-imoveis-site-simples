@@ -7,12 +7,12 @@ export default function Financiamento() {
   const bancos = [
     {
       nome: "Caixa Econômica Federal",
-      logo: "/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png",
+      logo: "https://logospng.org/download/caixa-economica-federal/logo-caixa-economica-federal-256.png",
       link: "https://habitacao.caixa.gov.br/siopiweb-web/simulaOperacaoInternet.do?method=inicializarCasoUso"
     },
     {
       nome: "Banco do Brasil",
-      logo: "/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png",
+      logo: "https://logospng.org/download/banco-do-brasil/logo-banco-do-brasil-escudo-256.png",
       link: "https://www.bb.com.br/site/pra-voce/financiamentos/financiamento-imobiliario/"
     },
     {
@@ -22,7 +22,7 @@ export default function Financiamento() {
     },
     {
       nome: "Bradesco",
-      logo: "/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png",
+      logo: "https://logospng.org/download/bradesco/logo-bradesco-256.png",
       link: "https://banco.bradesco/html/classic/produtos-servicos/emprestimo-e-financiamento/encontre-seu-credito/simuladores-imoveis.shtm"
     },
     {
