@@ -7,12 +7,12 @@ export default function Financiamento() {
   const bancos = [
     {
       nome: "Caixa Econômica Federal",
-      logo: "https://logodownload.org/wp-content/uploads/2014/05/caixa-logo-0.png",
+      logo: "/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png",
       link: "https://habitacao.caixa.gov.br/siopiweb-web/simulaOperacaoInternet.do?method=inicializarCasoUso"
     },
     {
       nome: "Banco do Brasil",
-      logo: "https://logodownload.org/wp-content/uploads/2014/05/banco-do-brasil-bb-logo.png",
+      logo: "/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png",
       link: "https://www.bb.com.br/site/pra-voce/financiamentos/financiamento-imobiliario/"
     },
     {
@@ -22,14 +22,29 @@ export default function Financiamento() {
     },
     {
       nome: "Bradesco",
-      logo: "https://logodownload.org/wp-content/uploads/2014/10/bradesco-logo-2.png",
+      logo: "/lovable-uploads/5cd14779-cfd8-48ef-b5b4-b710f606f6a9.png",
       link: "https://banco.bradesco/html/classic/produtos-servicos/emprestimo-e-financiamento/encontre-seu-credito/simuladores-imoveis.shtm"
     },
     {
       nome: "Santander",
       logo: "https://logodownload.org/wp-content/uploads/2014/09/santander-logo-2.png",
       link: "https://www.santander.com.br/atendimento-para-voce/simuladores/simulador-credito-imobiliário"
-    }
+    },
+    {
+      nome: "Creditas",
+      logo: "https://www.creditas.com/wp-content/themes/creditas-theme/static/images/creditas-logo.svg",
+      link: "https://www.creditas.com/imoveis/financiamento-imobiliario"
+    },
+    {
+      nome: "Sicoob",
+      logo: "https://www.sicoob.com.br/documents/44259/0/logo-sicoob.svg",
+      link: "https://www.sicoob.com.br/web/sicoob/credito-imobiliario"
+    },
+    {
+      nome: "Banco Inter",
+      logo: "https://logodownload.org/wp-content/uploads/2018/01/banco-inter-logo.png",
+      link: "https://www.bancointer.com.br/credito/credito-imobiliario/"
+    },
   ];
 
   const vantagens = [
@@ -85,7 +100,7 @@ export default function Financiamento() {
           Escolha um banco para simular
         </h2>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {bancos.map((banco, index) => (
             <a 
               key={index}

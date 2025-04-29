@@ -1,34 +1,77 @@
 
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function PropertiesShowcase() {
   const properties = [
     {
       id: 1,
       type: 'Apartamento',
-      title: 'Apartamento em Santo Andre - Vila Linda',
-      location: 'Santo André, SP',
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-      price: 'R$ 298.000',
+      title: 'Apartamento Diadema - Centro',
+      location: 'Diadema, SP',
+      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/11/Guilherme-Cotrim-20-1024x683.jpg',
+      price: 'R$ 297.000',
+      details: '2 dormitórios, 1 vaga',
+      ref: 'AP000123',
     },
     {
       id: 2,
       type: 'Casa',
-      title: 'Casa em São Bernardo do Campo - Vila Dayse',
+      title: 'Casa São Bernardo do Campo - Assunção',
       location: 'São Bernardo do Campo, SP',
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/12/WhatsApp-Image-2024-04-09-at-11.50.31-1-1024x683.jpeg',
       price: 'R$ 430.000',
+      details: '3 dormitórios, 2 vagas',
+      ref: 'CS000456',
     },
     {
       id: 3,
       type: 'Apartamento',
-      title: 'Apartamento em São Bernardo do Campo - Rudge Ramos',
+      title: 'Apartamento São Caetano do Sul - Barcelona',
+      location: 'São Caetano do Sul, SP',
+      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/07/WhatsApp-Image-2023-07-10-at-15.11.05-1024x683.jpeg',
+      price: 'R$ 760.000',
+      details: '3 dormitórios, 2 suítes, 2 vagas',
+      ref: 'AP000789',
+    },
+    {
+      id: 4,
+      type: 'Sobrado',
+      title: 'Sobrado Santo André - Jardim',
+      location: 'Santo André, SP',
+      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/08/Blue-Residence-fotos-14-1024x683.jpg',
+      price: 'R$ 550.000',
+      details: '3 dormitórios, 1 suíte, 2 vagas',
+      ref: 'SO000101',
+    },
+    {
+      id: 5,
+      type: 'Apartamento',
+      title: 'Apartamento Santo André - Vila Assunção',
+      location: 'Santo André, SP',
+      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/01/WhatsApp-Image-2023-01-24-at-10.47.22-1-1024x683.jpeg',
+      price: 'R$ 380.000',
+      details: '2 dormitórios, 1 vaga',
+      ref: 'AP000202',
+    },
+    {
+      id: 6,
+      type: 'Casa',
+      title: 'Casa São Bernardo do Campo - Paulicéia',
       location: 'São Bernardo do Campo, SP',
-      image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-      price: 'R$ 320.000',
+      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2022/12/WhatsApp-Image-2022-12-06-at-10.30.25-2-2-1024x683.jpeg',
+      price: 'R$ 490.000',
+      details: '2 dormitórios, 2 vagas',
+      ref: 'CS000303',
     }
   ];
+
+  const sendWhatsAppMessage = (property) => {
+    const message = `Olá Leandro, estou interessado no imóvel: ${property.title} - ${property.ref} no valor de ${property.price}. Gostaria de mais informações.`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/5511991866739?text=${encodedMessage}`, '_blank');
+  };
 
   return (
     <div className="py-16 bg-gray-50">
@@ -54,34 +97,53 @@ export default function PropertiesShowcase() {
                 <div className="absolute top-3 left-3 bg-[#253342] text-white text-xs font-semibold px-2 py-1 rounded">
                   {property.type}
                 </div>
+                <div className="absolute bottom-3 right-3 bg-[#5e9188] text-white text-xs font-semibold px-2 py-1 rounded">
+                  Ref: {property.ref}
+                </div>
               </div>
               <div className="p-5">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   {property.title}
                 </h3>
-                <p className="text-gray-600 mb-3 flex items-center">
+                <p className="text-gray-600 mb-1 flex items-center">
                   <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" />
                   </svg>
                   {property.location}
                 </p>
+                <p className="text-gray-600 mb-3">
+                  {property.details}
+                </p>
                 <div className="flex justify-between items-center mt-4">
                   <span className="text-lg font-bold text-[#253342]">
                     {property.price}
                   </span>
-                  <a
-                    href="https://wa.me/5511991866739"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[#5e9188] hover:text-[#253342] transition-colors flex items-center font-medium"
+                  <Button
+                    onClick={() => sendWhatsAppMessage(property)}
+                    className="bg-green-600 hover:bg-green-700 text-white flex items-center font-medium px-4 py-2"
                   >
-                    Detalhes
-                    <ArrowRight className="ml-1 w-4 h-4" />
-                  </a>
+                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.583.823 5.077 2.364 7.142L.236 23.656A1 1 0 001 25c.148 0 .294-.032.429-.097l4.677-2.131A11.969 11.969 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.86 0-3.668-.556-5.2-1.593a1 1 0 00-.8-.107l-3.173 1.136 1.14-3.173a1 1 0 00-.107-.8A9.957 9.957 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+                    </svg>
+                    Falar com Corretor
+                  </Button>
                 </div>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="text-center mt-12">
+          <a 
+            href="https://wa.me/5511991866739"
+            target="_blank"
+            rel="noopener noreferrer" 
+            className="inline-flex items-center bg-[#5e9188] hover:bg-[#3e5954] text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          >
+            Ver mais imóveis
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </a>
         </div>
       </div>
     </div>
