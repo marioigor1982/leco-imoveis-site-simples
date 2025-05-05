@@ -52,9 +52,19 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               border-radius: 4px;
               padding: 2px;
               border: 1px solid #ccc;
+              margin-left: 4px;
             }
             .VIpgJd-ZVi9od-l4eHX-hSRGPd {
               display: none;
+            }
+            .goog-logo-link {
+              display: none !important;
+            }
+            .goog-te-banner-frame.skiptranslate {
+              display: none !important;
+            }
+            body {
+              top: 0px !important;
             }
           `}
         </style>

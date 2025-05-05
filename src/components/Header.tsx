@@ -28,6 +28,7 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
         </Link>
         
         <div className="hidden md:flex space-x-6 items-center">
+          <GoogleTranslate />
           <Link 
             to="/" 
             className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-gray-700' : 'text-white'}`}
@@ -46,11 +47,10 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
           >
             Financiamento
           </Link>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center">
             <span className={`text-sm ${scrolled ? 'text-gray-700' : 'text-white/80'}`}>
               Visitas: {visitas}
             </span>
-            <GoogleTranslate />
           </div>
         </div>
         
@@ -70,6 +70,7 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
       {isMenuOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg">
           <div className="container mx-auto px-4 py-3 flex flex-col space-y-3">
+            <GoogleTranslate isMobile={true} />
             <Link 
               to="/" 
               className={`font-medium hover:text-[#5e9188] transition-colors ${location.pathname === '/' ? 'text-[#5e9188]' : 'text-blue-900'}`}
@@ -91,11 +92,10 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
             >
               Financiamento
             </Link>
-            <div className="flex justify-between items-center py-2">
+            <div className="flex justify-end items-center py-2">
               <div className="text-sm text-blue-700">
                 Visitas: {visitas}
               </div>
-              <GoogleTranslate isMobile={true} />
             </div>
           </div>
         </div>
