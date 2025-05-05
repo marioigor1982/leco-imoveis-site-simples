@@ -1,17 +1,18 @@
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import PropertyForm from '@/components/PropertyForm';
 import PropertiesTable from '@/components/PropertiesTable';
 import { Button } from '@/components/ui/button';
+import { Home } from 'lucide-react';
 
 export default function Admin() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState(null);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,8 +36,14 @@ export default function Admin() {
       }
     );
 
+    // Update date and time every minute
+    const dateTimeInterval = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 60000);
+
     return () => {
       authListener?.subscription?.unsubscribe();
+      clearInterval(dateTimeInterval);
     };
   }, [navigate]);
 
@@ -48,6 +55,13 @@ export default function Admin() {
   const handleEditProperty = (property) => {
     setEditingProperty(property);
     setShowForm(true);
+  };
+
+  const formatDateTime = (date) => {
+    return new Intl.DateTimeFormat('pt-BR', {
+      dateStyle: 'full',
+      timeStyle: 'short'
+    }).format(date);
   };
 
   if (loading) {
@@ -63,17 +77,33 @@ export default function Admin() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-[#253342]">
-          Painel do Corretor
-        </h1>
-        <Button
-          onClick={handleSignOut}
-          variant="outline"
-          className="border-red-500 text-red-500 hover:bg-red-50"
-        >
-          Sair
-        </Button>
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <Link to="/">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Home size={18} />
+                Voltar ao site
+              </Button>
+            </Link>
+          </div>
+          <div className="text-right text-sm text-gray-600">
+            {formatDateTime(currentDateTime)}
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#253342]">
+            Painel do Corretor
+          </h1>
+          <Button
+            onClick={handleSignOut}
+            variant="outline"
+            className="border-red-500 text-red-500 hover:bg-red-50"
+          >
+            Sair
+          </Button>
+        </div>
       </div>
       
       {!showForm ? (
