@@ -23,27 +23,27 @@ export default function Financiamento() {
     {
       nome: "Bradesco",
       logo: "https://logospng.org/download/bradesco/logo-bradesco-256.png",
-      link: "https://banco.bradesco/html/classic/produtos-servicos/emprestimo-e-financiamento/encontre-seu-credito/simuladores-imoveis.shtm"
+      link: "https://banco.bradesco/html/classic/produtos-servicos/emprestimo-e-financiamento/encontre-seu-credito/simuladores-imoveis.shtm#box1-comprar"
     },
     {
       nome: "Santander",
       logo: "https://ielt.fcsh.unl.pt/wp-content/uploads/2017/11/banco-santander-logo-33-300x300.png",
-      link: "https://www.santander.com.br/atendimento-para-voce/simuladores/simulador-credito-imobiliário"
+      link: "https://www.negociosimobiliarios.santander.com.br/negociosimobiliarios/#/dados-pessoais?goal=3&ic=lpcreditoimob"
     },
     {
       nome: "Creditas",
       logo: "https://startups.com.br/wp-content/uploads/2022/01/1200x675-1-1-1.webp",
-      link: "https://www.creditas.com/imoveis/financiamento-imobiliario"
+      link: "https://app.creditas.com/home-equity/solicitacao/informacoes-pessoais?experiment=CRMGT-005c&keyword=emprestimos+pessoais&creative=9808102790"
     },
     {
       nome: "Sicoob",
       logo: "https://imgs.search.brave.com/17oVIHvM-_1kDOnovqJStJWeryEiuE4oRkuRan3k8IM/rs:fit:860:0:0:0/g:ce/aHR0cDovL2FjaWFu/LmNvbS5ici93cC1j/b250ZW50L3VwbG9h/ZHMvMjAxOS8wOC9s/b2dvLXNpY29vYi0z/MDB4MjAwLmpwZw",
-      link: "https://www.sicoob.com.br/web/sicoob/credito-imobiliario"
+      link: "https://www.sicoob.com.br/web/creditoimobiliario/simulador"
     },
     {
       nome: "Banco Inter",
       logo: "https://i.pinimg.com/originals/ee/d3/75/eed3751a9a9b9c2d014dbcf7cb1a3df5.jpg",
-      link: "https://www.bancointer.com.br/credito/credito-imobiliario/"
+      link: "https://inter.co/pra-voce/financiamento-imobiliario/residencial/"
     },
   ];
 
