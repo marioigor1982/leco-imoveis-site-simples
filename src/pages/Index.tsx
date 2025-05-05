@@ -1,5 +1,6 @@
 
 import BackgroundSlideshow from '@/components/BackgroundSlideshow';
+import PropertiesShowcase from '@/components/PropertiesShowcase';
 import { ArrowRight } from 'lucide-react';
 
 export default function Index() {
@@ -26,6 +27,9 @@ export default function Index() {
           </a>
         </div>
       </div>
+      
+      {/* Properties Showcase Section */}
+      <PropertiesShowcase />
     </div>
   );
 }

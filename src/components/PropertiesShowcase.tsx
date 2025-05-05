@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function PropertiesShowcase() {
+  // Properties data from dharmaimoveis.com.br
   const properties = [
     {
       id: 1,
