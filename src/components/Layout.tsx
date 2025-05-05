@@ -75,6 +75,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
     </ThemeProvider>
   );
-};
+}
 
 export default Layout;
