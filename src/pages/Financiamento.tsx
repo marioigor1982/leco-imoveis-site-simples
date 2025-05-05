@@ -27,22 +27,22 @@ export default function Financiamento() {
     },
     {
       nome: "Santander",
-      logo: "https://logodownload.org/wp-content/uploads/2014/09/santander-logo-8.png",
+      logo: "https://ielt.fcsh.unl.pt/wp-content/uploads/2017/11/banco-santander-logo-33-300x300.png",
       link: "https://www.santander.com.br/atendimento-para-voce/simuladores/simulador-credito-imobiliário"
     },
     {
       nome: "Creditas",
-      logo: "https://creditas.com/static/images/logo-creditas.svg",
+      logo: "https://startups.com.br/wp-content/uploads/2022/01/1200x675-1-1-1.webp",
       link: "https://www.creditas.com/imoveis/financiamento-imobiliario"
     },
     {
       nome: "Sicoob",
-      logo: "https://www.sicoob.com.br/o/sicoob-theme/images/logo.png",
+      logo: "https://www.sicoob.com.br/documents/20128/1206594/0NOVO_app-sicoob.png/ce38aa2d-4664-7ca0-2316-b2bc1923ae54?t=1576101519271",
       link: "https://www.sicoob.com.br/web/sicoob/credito-imobiliario"
     },
     {
       nome: "Banco Inter",
-      logo: "https://logodownload.org/wp-content/uploads/2018/01/banco-inter-logo-1.png",
+      logo: "https://i.pinimg.com/originals/ee/d3/75/eed3751a9a9b9c2d014dbcf7cb1a3df5.jpg",
       link: "https://www.bancointer.com.br/credito/credito-imobiliario/"
     },
   ];
