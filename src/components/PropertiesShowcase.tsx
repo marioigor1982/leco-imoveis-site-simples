@@ -1,78 +1,75 @@
 
-import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function PropertiesShowcase() {
-  // Properties data from dharmaimoveis.com.br
-  const properties = [
-    {
-      id: 1,
-      type: 'Apartamento',
-      title: 'Apartamento Diadema - Centro',
-      location: 'Diadema, SP',
-      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/11/Guilherme-Cotrim-20-1024x683.jpg',
-      price: 'R$ 297.000',
-      details: '2 dormitórios, 1 vaga',
-      ref: 'AP000123',
-    },
-    {
-      id: 2,
-      type: 'Casa',
-      title: 'Casa São Bernardo do Campo - Assunção',
-      location: 'São Bernardo do Campo, SP',
-      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/12/WhatsApp-Image-2024-04-09-at-11.50.31-1-1024x683.jpeg',
-      price: 'R$ 430.000',
-      details: '3 dormitórios, 2 vagas',
-      ref: 'CS000456',
-    },
-    {
-      id: 3,
-      type: 'Apartamento',
-      title: 'Apartamento São Caetano do Sul - Barcelona',
-      location: 'São Caetano do Sul, SP',
-      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/07/WhatsApp-Image-2023-07-10-at-15.11.05-1024x683.jpeg',
-      price: 'R$ 760.000',
-      details: '3 dormitórios, 2 suítes, 2 vagas',
-      ref: 'AP000789',
-    },
-    {
-      id: 4,
-      type: 'Sobrado',
-      title: 'Sobrado Santo André - Jardim',
-      location: 'Santo André, SP',
-      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/08/Blue-Residence-fotos-14-1024x683.jpg',
-      price: 'R$ 550.000',
-      details: '3 dormitórios, 1 suíte, 2 vagas',
-      ref: 'SO000101',
-    },
-    {
-      id: 5,
-      type: 'Apartamento',
-      title: 'Apartamento Santo André - Vila Assunção',
-      location: 'Santo André, SP',
-      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2023/01/WhatsApp-Image-2023-01-24-at-10.47.22-1-1024x683.jpeg',
-      price: 'R$ 380.000',
-      details: '2 dormitórios, 1 vaga',
-      ref: 'AP000202',
-    },
-    {
-      id: 6,
-      type: 'Casa',
-      title: 'Casa São Bernardo do Campo - Paulicéia',
-      location: 'São Bernardo do Campo, SP',
-      image: 'https://www.dharmaimoveis.com.br/wp-content/uploads/2022/12/WhatsApp-Image-2022-12-06-at-10.30.25-2-2-1024x683.jpeg',
-      price: 'R$ 490.000',
-      details: '2 dormitórios, 2 vagas',
-      ref: 'CS000303',
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .order('created_at', { ascending: false });
+        
+      if (error) {
+        throw error;
+      }
+      
+      setProperties(data || []);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const sendWhatsAppMessage = (property) => {
     const message = `Olá Leandro, estou interessado no imóvel: ${property.title} - ${property.ref} no valor de ${property.price}. Gostaria de mais informações.`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/5511991866739?text=${encodedMessage}`, '_blank');
   };
+
+  if (loading) {
+    return (
+      <div className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#253342] mb-4">
+              Imóveis em Destaque
+            </h2>
+            <div className="flex justify-center mt-8">
+              <Loader2 className="h-8 w-8 animate-spin text-[#5e9188]" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (properties.length === 0) {
+    return (
+      <div className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#253342] mb-4">
+              Imóveis em Destaque
+            </h2>
+            <p className="text-gray-600 max-w-3xl mx-auto">
+              Em breve, novos imóveis disponíveis.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-16 bg-gray-50">
@@ -90,11 +87,17 @@ export default function PropertiesShowcase() {
           {properties.map(property => (
             <div key={property.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
               <div className="relative h-56">
-                <img 
-                  src={property.image} 
-                  alt={property.title}
-                  className="w-full h-full object-cover"
-                />
+                {property.image_url ? (
+                  <img 
+                    src={property.image_url} 
+                    alt={property.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <p className="text-gray-500">Sem imagem</p>
+                  </div>
+                )}
                 <div className="absolute top-3 left-3 bg-[#253342] text-white text-xs font-semibold px-2 py-1 rounded">
                   {property.type}
                 </div>
