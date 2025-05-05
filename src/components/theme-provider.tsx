@@ -1,7 +1,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "light";
+type Theme = "light" | "dark";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -27,19 +27,20 @@ export function ThemeProvider({
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme] = useState<Theme>("light");
+  const [theme, setTheme] = useState<Theme>(
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+  );
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("dark");
-    root.classList.add("light");
-  }, []);
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem(storageKey, theme);
+  }, [theme, storageKey]);
 
   const value = {
     theme,
-    setTheme: () => {
-      // No-op since we only support light theme now
-    },
+    setTheme,
   };
 
   return (
