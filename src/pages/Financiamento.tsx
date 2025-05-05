@@ -12,7 +12,7 @@ export default function Financiamento() {
     },
     {
       nome: "Banco do Brasil",
-      logo: "https://logospng.org/download/banco-do-brasil/logo-banco-do-brasil-escudo-256.png",
+      logo: "https://logospng.org/download/banco-do-brasil/logo-banco-do-brasil-256.png",
       link: "https://www.bb.com.br/site/pra-voce/financiamentos/financiamento-imobiliario/"
     },
     {
@@ -27,22 +27,22 @@ export default function Financiamento() {
     },
     {
       nome: "Santander",
-      logo: "https://logodownload.org/wp-content/uploads/2014/09/santander-logo-2.png",
+      logo: "https://logodownload.org/wp-content/uploads/2014/09/santander-logo-8.png",
       link: "https://www.santander.com.br/atendimento-para-voce/simuladores/simulador-credito-imobiliário"
     },
     {
       nome: "Creditas",
-      logo: "https://www.creditas.com/wp-content/themes/creditas-theme/static/images/creditas-logo.svg",
+      logo: "https://creditas.com/static/images/logo-creditas.svg",
       link: "https://www.creditas.com/imoveis/financiamento-imobiliario"
     },
     {
       nome: "Sicoob",
-      logo: "https://www.sicoob.com.br/documents/44259/0/logo-sicoob.svg",
+      logo: "https://www.sicoob.com.br/o/sicoob-theme/images/logo.png",
       link: "https://www.sicoob.com.br/web/sicoob/credito-imobiliario"
     },
     {
       nome: "Banco Inter",
-      logo: "https://logodownload.org/wp-content/uploads/2018/01/banco-inter-logo.png",
+      logo: "https://logodownload.org/wp-content/uploads/2018/01/banco-inter-logo-1.png",
       link: "https://www.bancointer.com.br/credito/credito-imobiliario/"
     },
   ];
