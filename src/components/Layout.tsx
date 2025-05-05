@@ -4,7 +4,6 @@ import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { ThemeProvider } from "@/components/theme-provider";
-import { DarkModeToggle } from "@/components/DarkModeToggle";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -66,10 +65,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           toggleMenu={toggleMenu}
           visitas={visitas}
         />
-        
-        <div className="fixed top-4 right-4 z-50">
-          <DarkModeToggle />
-        </div>
         
         <main className="flex-grow pt-16">
           {children}
