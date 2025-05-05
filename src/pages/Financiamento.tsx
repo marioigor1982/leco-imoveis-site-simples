@@ -37,7 +37,7 @@ export default function Financiamento() {
     },
     {
       nome: "Sicoob",
-      logo: "https://www.sicoob.com.br/documents/20128/1206594/0NOVO_app-sicoob.png/ce38aa2d-4664-7ca0-2316-b2bc1923ae54?t=1576101519271",
+      logo: "https://imgs.search.brave.com/17oVIHvM-_1kDOnovqJStJWeryEiuE4oRkuRan3k8IM/rs:fit:860:0:0:0/g:ce/aHR0cDovL2FjaWFu/LmNvbS5ici93cC1j/b250ZW50L3VwbG9h/ZHMvMjAxOS8wOC9s/b2dvLXNpY29vYi0z/MDB4MjAwLmpwZw",
       link: "https://www.sicoob.com.br/web/sicoob/credito-imobiliario"
     },
     {
