@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import { Languages } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -39,7 +40,7 @@ export const GoogleTranslate = ({ isMobile = false }: GoogleTranslateProps) => {
       window.googleTranslateElementInit2 = function() {
         new window.google.translate.TranslateElement({
           pageLanguage: 'pt',
-          includedLanguages: 'pt,es,en,ja',
+          includedLanguages: 'pt,en,ja,es,fr,it',
           layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE
         }, 'google_translate_element_mobile');
       };
@@ -52,7 +53,7 @@ export const GoogleTranslate = ({ isMobile = false }: GoogleTranslateProps) => {
       window.googleTranslateElementInit = function() {
         new window.google.translate.TranslateElement({
           pageLanguage: 'pt',
-          includedLanguages: 'pt,es,en,ja',
+          includedLanguages: 'pt,en,ja,es,fr,it',
           layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL
         }, 'google_translate_element');
       };
@@ -71,7 +72,9 @@ export const GoogleTranslate = ({ isMobile = false }: GoogleTranslateProps) => {
   return (
     <div 
       id={isMobile ? "google_translate_element_mobile" : "google_translate_element"} 
-      className={isMobile ? "" : "ml-4"}
-    ></div>
+      className={`flex items-center ${isMobile ? "" : "ml-4"}`}
+    >
+      <Languages className="w-4 h-4 mr-1" />
+    </div>
   );
 };

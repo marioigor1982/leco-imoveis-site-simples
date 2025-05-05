@@ -46,7 +46,7 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
           >
             Financiamento
           </Link>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-4">
             <span className={`text-sm ${scrolled ? 'text-gray-700' : 'text-white/80'}`}>
               Visitas: {visitas}
             </span>
@@ -91,10 +91,10 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
             >
               Financiamento
             </Link>
-            <div className="text-sm text-blue-700 py-1">
-              Visitas: {visitas}
-            </div>
-            <div className="py-2">
+            <div className="flex justify-between items-center py-2">
+              <div className="text-sm text-blue-700">
+                Visitas: {visitas}
+              </div>
               <GoogleTranslate isMobile={true} />
             </div>
           </div>
