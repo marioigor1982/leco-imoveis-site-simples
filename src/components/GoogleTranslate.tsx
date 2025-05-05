@@ -4,11 +4,13 @@ import React, { useEffect } from 'react';
 declare global {
   interface Window {
     googleTranslateElementInit: () => void;
+    googleTranslateElementInit2: () => void;
     google: {
       translate: {
         TranslateElement: {
           InlineLayout: {
             HORIZONTAL: number;
+            SIMPLE: number;
           };
           new (config: any, element: string): any;
         };
@@ -17,26 +19,59 @@ declare global {
   }
 }
 
-export const GoogleTranslate = () => {
-  useEffect(() => {
-    // Add Google Translate Script
-    const script = document.createElement('script');
-    script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-    script.async = true;
-    document.body.appendChild(script);
+interface GoogleTranslateProps {
+  isMobile?: boolean;
+}
 
-    window.googleTranslateElementInit = function() {
-      new window.google.translate.TranslateElement({
-        pageLanguage: 'pt',
-        includedLanguages: 'pt,es,en,ja',
-        layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL
-      }, 'google_translate_element');
-    };
+export const GoogleTranslate = ({ isMobile = false }: GoogleTranslateProps) => {
+  useEffect(() => {
+    // Add Google Translate Script if it doesn't exist yet
+    if (!document.getElementById('google-translate-script')) {
+      const script = document.createElement('script');
+      script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      script.id = 'google-translate-script';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    // Initialize Google Translate
+    if (isMobile) {
+      window.googleTranslateElementInit2 = function() {
+        new window.google.translate.TranslateElement({
+          pageLanguage: 'pt',
+          includedLanguages: 'pt,es,en,ja',
+          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE
+        }, 'google_translate_element_mobile');
+      };
+      
+      // If script is already loaded, call the init function
+      if (window.google && window.google.translate) {
+        window.googleTranslateElementInit2();
+      }
+    } else {
+      window.googleTranslateElementInit = function() {
+        new window.google.translate.TranslateElement({
+          pageLanguage: 'pt',
+          includedLanguages: 'pt,es,en,ja',
+          layout: window.google.translate.TranslateElement.InlineLayout.HORIZONTAL
+        }, 'google_translate_element');
+      };
+      
+      // If script is already loaded, call the init function
+      if (window.google && window.google.translate) {
+        window.googleTranslateElementInit();
+      }
+    }
     
     return () => {
-      document.body.removeChild(script);
+      // No need to remove the script on unmount as it needs to be globally available
     };
-  }, []);
+  }, [isMobile]);
 
-  return <div id="google_translate_element" className="ml-4"></div>;
+  return (
+    <div 
+      id={isMobile ? "google_translate_element_mobile" : "google_translate_element"} 
+      className={isMobile ? "" : "ml-4"}
+    ></div>
+  );
 };

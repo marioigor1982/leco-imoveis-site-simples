@@ -3,6 +3,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { GoogleTranslate } from "./GoogleTranslate";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface HeaderProps {
   scrolled: boolean;
@@ -13,6 +14,7 @@ interface HeaderProps {
 
 export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProps) => {
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   return (
     <header className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-[#1A1F2C]'}`}>
@@ -53,8 +55,9 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
         </div>
         
         <button 
-          className="md:hidden text-white focus:outline-none"
+          className={`md:hidden focus:outline-none ${scrolled ? 'text-gray-700' : 'text-white'}`}
           onClick={toggleMenu}
+          aria-label="Menu"
         >
           {isMenuOpen ? 
             <X className="w-6 h-6" /> : 
@@ -88,10 +91,12 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
             >
               Financiamento
             </Link>
-            <div className="text-sm text-blue-700">
+            <div className="text-sm text-blue-700 py-1">
               Visitas: {visitas}
             </div>
-            <div id="google_translate_element_mobile"></div>
+            <div className="py-2">
+              <GoogleTranslate isMobile={true} />
+            </div>
           </div>
         </div>
       )}
