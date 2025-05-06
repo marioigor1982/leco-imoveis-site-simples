@@ -11,8 +11,10 @@ const BackgroundSlideshow = () => {
         loop
         className="w-full h-full object-cover"
       >
+        {/* Nota: Como não é possível carregar arquivos do caminho local C:\Users\mario\OneDrive\Documentos\Wallpaper Corretor Leandro.mp4,
+           é necessário fazer upload do arquivo primeiro para o projeto */}
         <source src="/lovable-uploads/wallpaper-corretor-leandro.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
+        Seu navegador não suporta a tag de vídeo.
       </video>
     </div>
   );

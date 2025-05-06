@@ -20,7 +20,7 @@ export default function Index() {
               Especialista no programa minha casa minha vida
             </p>
             <img 
-              src="https://www.gov.br/mdr/pt-br/acesso-a-informacao/acoes-e-programas/minha-casa-minha-vida/imagens/Logo_Minha_Casa_Minha_Vida.png" 
+              src="https://images.seeklogo.com/logo-png/18/1/minha-casa-minha-vida-logo-png_seeklogo-183769.png" 
               alt="Minha Casa Minha Vida" 
               className="h-16 object-contain"
             />
