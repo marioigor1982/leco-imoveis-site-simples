@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Heart, BadgeCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 type PropertiesTableProps = {
   onEdit: (property: any) => void;
@@ -12,6 +13,7 @@ type PropertiesTableProps = {
 export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'sold'>('all');
 
   useEffect(() => {
     fetchProperties();
@@ -61,6 +63,32 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
     }
   };
 
+  const toggleSoldStatus = async (property: any) => {
+    try {
+      const { error } = await supabase
+        .from('properties')
+        .update({ sold: !property.sold })
+        .eq('id', property.id);
+        
+      if (error) {
+        throw error;
+      }
+      
+      toast.success(`Imóvel marcado como ${!property.sold ? 'VENDIDO' : 'DISPONÍVEL'}`);
+      fetchProperties();
+    } catch (error) {
+      console.error('Error updating property status:', error);
+      toast.error('Erro ao atualizar status do imóvel');
+    }
+  };
+
+  const filteredProperties = properties.filter((property: any) => {
+    if (filterStatus === 'all') return true;
+    if (filterStatus === 'available') return !property.sold;
+    if (filterStatus === 'sold') return property.sold;
+    return true;
+  });
+
   if (loading) {
     return (
       <div className="text-center py-8">
@@ -80,61 +108,121 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="px-4 py-3">Imagem</th>
-            <th className="px-4 py-3">Título</th>
-            <th className="px-4 py-3">Local</th>
-            <th className="px-4 py-3">Tipo</th>
-            <th className="px-4 py-3">Preço</th>
-            <th className="px-4 py-3">Ref.</th>
-            <th className="px-4 py-3 text-right">Ações</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y">
-          {properties.map((property) => (
-            <tr key={property.id} className="hover:bg-gray-50">
-              <td className="px-4 py-3">
-                {property.image_url ? (
-                  <img 
-                    src={property.image_url} 
-                    alt={property.title}
-                    className="h-16 w-16 object-cover rounded"
-                  />
-                ) : (
-                  <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-500">
-                    Sem imagem
-                  </div>
-                )}
-              </td>
-              <td className="px-4 py-3 font-medium">{property.title}</td>
-              <td className="px-4 py-3">{property.location}</td>
-              <td className="px-4 py-3">{property.type}</td>
-              <td className="px-4 py-3">{property.price}</td>
-              <td className="px-4 py-3">{property.ref}</td>
-              <td className="px-4 py-3 text-right space-x-2">
-                <Button 
-                  size="sm" 
-                  variant="ghost"
-                  onClick={() => onEdit(property)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="ghost" 
-                  className="text-red-500 hover:text-red-700"
-                  onClick={() => handleDelete(property.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </td>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <Button 
+          variant={filterStatus === 'all' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('all')}
+          size="sm"
+        >
+          Todos
+        </Button>
+        <Button 
+          variant={filterStatus === 'available' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('available')}
+          size="sm"
+          className={filterStatus === 'available' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+        >
+          Disponíveis
+        </Button>
+        <Button 
+          variant={filterStatus === 'sold' ? 'default' : 'outline'}
+          onClick={() => setFilterStatus('sold')}
+          size="sm"
+          className={filterStatus === 'sold' ? 'bg-green-600 hover:bg-green-700' : ''}
+        >
+          Vendidos
+        </Button>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-3">Imagem</th>
+              <th className="px-4 py-3">Título</th>
+              <th className="px-4 py-3">Local</th>
+              <th className="px-4 py-3">Tipo</th>
+              <th className="px-4 py-3">Preço</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3">Curtidas</th>
+              <th className="px-4 py-3 text-right">Ações</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y">
+            {filteredProperties.map((property: any) => (
+              <tr key={property.id} className="hover:bg-gray-50">
+                <td className="px-4 py-3">
+                  <div className="relative">
+                    {property.image_url ? (
+                      <img 
+                        src={property.image_url} 
+                        alt={property.title}
+                        className="h-16 w-16 object-cover rounded"
+                      />
+                    ) : (
+                      <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-500">
+                        Sem imagem
+                      </div>
+                    )}
+                    {property.sold && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded">
+                        <span className="text-green-400 font-bold text-xs transform -rotate-45">VENDIDO</span>
+                      </div>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3 font-medium">{property.title}</td>
+                <td className="px-4 py-3">{property.location}</td>
+                <td className="px-4 py-3">{property.type}</td>
+                <td className="px-4 py-3">{property.price}</td>
+                <td className="px-4 py-3">
+                  {property.sold ? (
+                    <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-200">
+                      VENDIDO
+                    </Badge>
+                  ) : (
+                    <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                      DISPONÍVEL
+                    </Badge>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center">
+                    <Heart className="h-4 w-4 text-red-500 mr-1" />
+                    <span>{property.likes || 0}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <Button 
+                    size="sm" 
+                    variant="ghost"
+                    onClick={() => toggleSoldStatus(property)}
+                    className={property.sold ? "text-blue-600 hover:text-blue-800" : "text-green-600 hover:text-green-800"}
+                  >
+                    <BadgeCheck className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost"
+                    onClick={() => onEdit(property)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleDelete(property.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

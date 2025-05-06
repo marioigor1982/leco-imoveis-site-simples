@@ -1,6 +1,7 @@
 
 import BackgroundSlideshow from '@/components/BackgroundSlideshow';
 import PropertiesShowcase from '@/components/PropertiesShowcase';
+import Testimonials from '@/components/Testimonials';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -14,9 +15,16 @@ export default function Index() {
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             O sonho da casa própria nunca foi tão fácil de realizar!
           </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Especialista em imóveis na região do ABC Paulista
-          </p>
+          <div className="flex flex-col items-center mb-8">
+            <p className="text-xl md:text-2xl mb-2">
+              Especialista no programa minha casa minha vida
+            </p>
+            <img 
+              src="https://www.gov.br/mdr/pt-br/acesso-a-informacao/acoes-e-programas/minha-casa-minha-vida/imagens/Logo_Minha_Casa_Minha_Vida.png" 
+              alt="Minha Casa Minha Vida" 
+              className="h-16 object-contain"
+            />
+          </div>
           <div className="flex flex-wrap gap-4 justify-center">
             <a
               href="https://wa.me/5511991866739"
@@ -40,6 +48,9 @@ export default function Index() {
       
       {/* Properties Showcase Section */}
       <PropertiesShowcase />
+      
+      {/* Testimonials Section */}
+      <Testimonials />
     </div>
   );
 }

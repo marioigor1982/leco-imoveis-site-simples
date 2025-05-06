@@ -1,15 +1,19 @@
 
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/sonner';
 
 export default function PropertiesShowcase() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [likedProperties, setLikedProperties] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchProperties();
+    const likedProps = JSON.parse(localStorage.getItem('likedProperties') || '{}');
+    setLikedProperties(likedProps);
   }, []);
 
   const fetchProperties = async () => {
@@ -35,6 +39,46 @@ export default function PropertiesShowcase() {
     const message = `Olá Leandro, estou interessado no imóvel: ${property.title} - ${property.ref} no valor de ${property.price}. Gostaria de mais informações.`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/5511991866739?text=${encodedMessage}`, '_blank');
+  };
+
+  const handleLike = async (propertyId: string) => {
+    try {
+      // Check if already liked
+      const wasLiked = likedProperties[propertyId];
+      
+      // Update local state
+      const newLikedProperties = { ...likedProperties };
+      newLikedProperties[propertyId] = !wasLiked;
+      setLikedProperties(newLikedProperties);
+      
+      // Store in localStorage
+      localStorage.setItem('likedProperties', JSON.stringify(newLikedProperties));
+      
+      // Get current property likes
+      const { data: propertyData } = await supabase
+        .from('properties')
+        .select('likes')
+        .eq('id', propertyId)
+        .single();
+        
+      const currentLikes = propertyData?.likes || 0;
+      
+      // Update in database
+      const { error } = await supabase
+        .from('properties')
+        .update({ likes: wasLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 })
+        .eq('id', propertyId);
+        
+      if (error) {
+        throw error;
+      }
+      
+      // Refresh properties to get updated likes count
+      fetchProperties();
+      
+    } catch (error) {
+      console.error('Error updating likes:', error);
+    }
   };
 
   if (loading) {
@@ -85,14 +129,23 @@ export default function PropertiesShowcase() {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.map(property => (
-            <div key={property.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div key={property.id} className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 relative">
               <div className="relative h-56">
                 {property.image_url ? (
-                  <img 
-                    src={property.image_url} 
-                    alt={property.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <div className="relative w-full h-full">
+                    <img 
+                      src={property.image_url} 
+                      alt={property.title}
+                      className="w-full h-full object-cover"
+                    />
+                    {property.sold && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-green-500/80 text-white font-bold py-2 px-6 transform -rotate-45 text-xl w-full text-center">
+                          VENDIDO
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center">
                     <p className="text-gray-500">Sem imagem</p>
@@ -122,16 +175,32 @@ export default function PropertiesShowcase() {
                   <span className="text-lg font-bold text-[#253342]">
                     {property.price}
                   </span>
-                  <Button
-                    onClick={() => sendWhatsAppMessage(property)}
-                    className="bg-green-600 hover:bg-green-700 text-white flex items-center font-medium px-4 py-2"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.583.823 5.077 2.364 7.142L.236 23.656A1 1 0 001 25c.148 0 .294-.032.429-.097l4.677-2.131A11.969 11.969 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.86 0-3.668-.556-5.2-1.593a1 1 0 00-.8-.107l-3.173 1.136 1.14-3.173a1 1 0 00-.107-.8A9.957 9.957 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
-                    </svg>
-                    Falar com Corretor
-                  </Button>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      onClick={() => handleLike(property.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="flex items-center gap-1 hover:bg-pink-50"
+                    >
+                      <Heart
+                        className={`w-5 h-5 ${likedProperties[property.id] ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
+                      />
+                      <span className="text-sm font-medium">{property.likes || 0}</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={() => sendWhatsAppMessage(property)}
+                      className="bg-green-600 hover:bg-green-700 text-white flex items-center font-medium px-4 py-2"
+                      disabled={property.sold}
+                    >
+                      <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.583.823 5.077 2.364 7.142L.236 23.656A1 1 0 001 25c.148 0 .294-.032.429-.097l4.677-2.131A11.969 11.969 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.86 0-3.668-.556-5.2-1.593a1 1 0 00-.8-.107l-3.173 1.136 1.14-3.173a1 1 0 00-.107-.8A9.957 9.957 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/>
+                      </svg>
+                      {property.sold ? 'Imóvel vendido' : 'Falar com Corretor'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>

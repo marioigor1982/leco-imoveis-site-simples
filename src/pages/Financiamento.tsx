@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,16 +28,6 @@ export default function Financiamento() {
       nome: "Santander",
       logo: "https://ielt.fcsh.unl.pt/wp-content/uploads/2017/11/banco-santander-logo-33-300x300.png",
       link: "https://www.negociosimobiliarios.santander.com.br/negociosimobiliarios/#/dados-pessoais?goal=3&ic=lpcreditoimob"
-    },
-    {
-      nome: "Creditas",
-      logo: "https://startups.com.br/wp-content/uploads/2022/01/1200x675-1-1-1.webp",
-      link: "https://app.creditas.com/home-equity/solicitacao/informacoes-pessoais?experiment=CRMGT-005c&keyword=emprestimos+pessoais&creative=9808102790"
-    },
-    {
-      nome: "Sicoob",
-      logo: "https://imgs.search.brave.com/17oVIHvM-_1kDOnovqJStJWeryEiuE4oRkuRan3k8IM/rs:fit:860:0:0:0/g:ce/aHR0cDovL2FjaWFu/LmNvbS5ici93cC1j/b250ZW50L3VwbG9h/ZHMvMjAxOS8wOC9s/b2dvLXNpY29vYi0z/MDB4MjAwLmpwZw",
-      link: "https://www.sicoob.com.br/web/creditoimobiliario/simulador"
     },
     {
       nome: "Banco Inter",

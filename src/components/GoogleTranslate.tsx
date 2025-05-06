@@ -74,10 +74,10 @@ export const GoogleTranslate = ({ isMobile = false }: GoogleTranslateProps) => {
   return (
     <div 
       id={isMobile ? "google_translate_element_mobile" : "google_translate_element"} 
-      className={`flex items-center ${isMobile ? "mt-2" : "ml-4"}`}
+      className={`flex items-center ${isMobile ? "mt-2" : "ml-4"} text-white`}
     >
-      <Globe className="w-5 h-5 mr-1" />
-      <span className="text-xs">Traduzir</span>
+      <Globe className="w-5 h-5 mr-1 text-white" />
+      <span className="text-xs text-white">Traduzir</span>
     </div>
   );
 };
