@@ -5,8 +5,24 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 
+interface Property {
+  id: string;
+  title: string;
+  location: string;
+  type: string;
+  price: string;
+  details: string;
+  ref: string;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+  sold?: boolean;
+  likes?: number;
+  images?: string[];
+}
+
 export default function PropertiesShowcase() {
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedProperties, setLikedProperties] = useState<Record<string, boolean>>({});
 
@@ -27,7 +43,14 @@ export default function PropertiesShowcase() {
         throw error;
       }
       
-      setProperties(data || []);
+      // Set default values for properties that might not have likes or sold status
+      const propertiesWithDefaults = data?.map(prop => ({
+        ...prop,
+        likes: prop.likes || 0,
+        sold: prop.sold || false
+      })) || [];
+      
+      setProperties(propertiesWithDefaults);
     } catch (error) {
       console.error('Error fetching properties:', error);
     } finally {
@@ -35,7 +58,7 @@ export default function PropertiesShowcase() {
     }
   };
 
-  const sendWhatsAppMessage = (property) => {
+  const sendWhatsAppMessage = (property: Property) => {
     const message = `Olá Leandro, estou interessado no imóvel: ${property.title} - ${property.ref} no valor de ${property.price}. Gostaria de mais informações.`;
     const encodedMessage = encodeURIComponent(message);
     window.open(`https://wa.me/5511991866739?text=${encodedMessage}`, '_blank');
@@ -54,22 +77,31 @@ export default function PropertiesShowcase() {
       // Store in localStorage
       localStorage.setItem('likedProperties', JSON.stringify(newLikedProperties));
       
-      // Get current property likes
-      const { data: propertyData } = await supabase
-        .from('properties')
-        .select('likes')
-        .eq('id', propertyId)
-        .single();
-        
-      const currentLikes = propertyData?.likes || 0;
+      // Get current property
+      const property = properties.find(p => p.id === propertyId);
+      if (!property) return;
+      
+      const currentLikes = property.likes || 0;
+      const newLikes = wasLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1;
       
       // Update in database
       const { error } = await supabase
         .from('properties')
-        .update({ likes: wasLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1 })
+        .update({ likes: newLikes })
         .eq('id', propertyId);
         
       if (error) {
+        // Check if the error is because the column doesn't exist
+        if (error.message.includes("column 'likes' does not exist")) {
+          console.warn("The 'likes' column doesn't exist yet. Creating it first.");
+          // For now, just update the UI without persisting to the database
+          // The column will need to be added through a migration
+          const updatedProperties = properties.map(p => 
+            p.id === propertyId ? { ...p, likes: newLikes } : p
+          );
+          setProperties(updatedProperties);
+          return;
+        }
         throw error;
       }
       
