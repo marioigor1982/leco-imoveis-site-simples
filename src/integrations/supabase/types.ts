@@ -15,9 +15,12 @@ export type Database = {
           details: string
           id: string
           image_url: string | null
+          images: string[] | null
+          likes: number | null
           location: string
           price: string
           ref: string
+          sold: boolean | null
           title: string
           type: string
           updated_at: string
@@ -27,9 +30,12 @@ export type Database = {
           details: string
           id?: string
           image_url?: string | null
+          images?: string[] | null
+          likes?: number | null
           location: string
           price: string
           ref: string
+          sold?: boolean | null
           title: string
           type: string
           updated_at?: string
@@ -39,9 +45,12 @@ export type Database = {
           details?: string
           id?: string
           image_url?: string | null
+          images?: string[] | null
+          likes?: number | null
           location?: string
           price?: string
           ref?: string
+          sold?: boolean | null
           title?: string
           type?: string
           updated_at?: string

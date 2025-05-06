@@ -16,8 +16,8 @@ interface Property {
   image_url: string | null;
   created_at: string;
   updated_at: string;
-  sold?: boolean;
-  likes?: number;
+  sold: boolean;
+  likes: number;
   images?: string[];
 }
 
@@ -50,7 +50,8 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
       const propertiesWithDefaults = data?.map(prop => ({
         ...prop,
         likes: prop.likes || 0,
-        sold: prop.sold || false
+        sold: prop.sold || false,
+        images: prop.images || []
       })) || [];
       
       setProperties(propertiesWithDefaults);
@@ -95,16 +96,6 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
         .eq('id', property.id);
         
       if (error) {
-        // Check if the error is because the column doesn't exist
-        if (error.message.includes("column 'sold' does not exist")) {
-          console.warn("The 'sold' column doesn't exist yet. Creating it first.");
-          // For now, just update the UI without persisting to the database
-          const updatedProperties = properties.map(p => 
-            p.id === property.id ? { ...p, sold: newSoldStatus } : p
-          );
-          setProperties(updatedProperties);
-          return;
-        }
         throw error;
       }
       
@@ -116,7 +107,7 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
     }
   };
 
-  const filteredProperties = properties.filter((property: any) => {
+  const filteredProperties = properties.filter((property) => {
     if (filterStatus === 'all') return true;
     if (filterStatus === 'available') return !property.sold;
     if (filterStatus === 'sold') return property.sold;

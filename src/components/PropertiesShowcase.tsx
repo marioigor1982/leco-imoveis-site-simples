@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Loader2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,8 +15,8 @@ interface Property {
   image_url: string | null;
   created_at: string;
   updated_at: string;
-  sold?: boolean;
-  likes?: number;
+  sold: boolean;
+  likes: number;
   images?: string[];
 }
 
@@ -47,7 +46,8 @@ export default function PropertiesShowcase() {
       const propertiesWithDefaults = data?.map(prop => ({
         ...prop,
         likes: prop.likes || 0,
-        sold: prop.sold || false
+        sold: prop.sold || false,
+        images: prop.images || []
       })) || [];
       
       setProperties(propertiesWithDefaults);
@@ -91,17 +91,6 @@ export default function PropertiesShowcase() {
         .eq('id', propertyId);
         
       if (error) {
-        // Check if the error is because the column doesn't exist
-        if (error.message.includes("column 'likes' does not exist")) {
-          console.warn("The 'likes' column doesn't exist yet. Creating it first.");
-          // For now, just update the UI without persisting to the database
-          // The column will need to be added through a migration
-          const updatedProperties = properties.map(p => 
-            p.id === propertyId ? { ...p, likes: newLikes } : p
-          );
-          setProperties(updatedProperties);
-          return;
-        }
         throw error;
       }
       
