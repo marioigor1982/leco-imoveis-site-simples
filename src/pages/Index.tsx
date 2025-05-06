@@ -11,18 +11,18 @@ export default function Index() {
       {/* Hero Section */}
       <div className="relative min-h-screen flex items-center justify-center text-white">
         <BackgroundSlideshow />
-        <div className="relative z-20 text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 drop-shadow-lg">
             O sonho da casa própria nunca foi tão fácil de realizar!
           </h1>
           <div className="flex flex-col items-center mb-8">
-            <p className="text-xl md:text-2xl mb-2">
+            <p className="text-xl md:text-2xl mb-2 drop-shadow-md">
               Especialista no programa minha casa minha vida
             </p>
             <img 
               src="https://images.seeklogo.com/logo-png/18/1/minha-casa-minha-vida-logo-png_seeklogo-183769.png" 
               alt="Minha Casa Minha Vida" 
-              className="h-16 object-contain"
+              className="h-16 object-contain bg-white/80 p-1 rounded-lg"
             />
           </div>
           <div className="flex flex-wrap gap-4 justify-center">
