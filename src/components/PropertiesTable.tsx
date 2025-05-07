@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,12 +24,14 @@ interface Property {
 
 type PropertiesTableProps = {
   onEdit: (property: Property) => void;
+  onUpdateComplete?: () => void;
 };
 
-export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
+export default function PropertiesTable({ onEdit, onUpdateComplete }: PropertiesTableProps) {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<'all' | 'available' | 'sold'>('all');
+  const [propertyCount, setPropertyCount] = useState(0);
 
   useEffect(() => {
     fetchProperties();
@@ -55,6 +58,11 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
       })) || [];
       
       setProperties(propertiesWithDefaults);
+      setPropertyCount(propertiesWithDefaults.length);
+
+      if (onUpdateComplete) {
+        onUpdateComplete();
+      }
     } catch (error) {
       console.error('Error fetching properties:', error);
       toast.error('Erro ao buscar imóveis');
@@ -116,30 +124,43 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-2">
-        <Button 
-          variant={filterStatus === 'all' ? 'default' : 'outline'}
-          onClick={() => setFilterStatus('all')}
-          size="sm"
-        >
-          Todos
-        </Button>
-        <Button 
-          variant={filterStatus === 'available' ? 'default' : 'outline'}
-          onClick={() => setFilterStatus('available')}
-          size="sm"
-          className={filterStatus === 'available' ? 'bg-blue-600 hover:bg-blue-700' : ''}
-        >
-          Disponíveis
-        </Button>
-        <Button 
-          variant={filterStatus === 'sold' ? 'default' : 'outline'}
-          onClick={() => setFilterStatus('sold')}
-          size="sm"
-          className={filterStatus === 'sold' ? 'bg-green-600 hover:bg-green-700' : ''}
-        >
-          Vendidos
-        </Button>
+      <div className="flex flex-wrap justify-between items-center">
+        <div className="flex flex-wrap gap-2">
+          <Button 
+            variant={filterStatus === 'all' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('all')}
+            size="sm"
+          >
+            Todos ({properties.length})
+          </Button>
+          <Button 
+            variant={filterStatus === 'available' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('available')}
+            size="sm"
+            className={filterStatus === 'available' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+          >
+            Disponíveis ({properties.filter(p => !p.sold).length})
+          </Button>
+          <Button 
+            variant={filterStatus === 'sold' ? 'default' : 'outline'}
+            onClick={() => setFilterStatus('sold')}
+            size="sm"
+            className={filterStatus === 'sold' ? 'bg-green-600 hover:bg-green-700' : ''}
+          >
+            Vendidos ({properties.filter(p => p.sold).length})
+          </Button>
+        </div>
+        <div className="text-sm text-gray-600 mt-2 md:mt-0">
+          {propertyCount >= 200 ? (
+            <span className="text-yellow-600 font-medium">
+              Limite máximo de 200 imóveis atingido ({propertyCount}/200)
+            </span>
+          ) : (
+            <span>
+              Total de imóveis: {propertyCount}/200
+            </span>
+          )}
+        </div>
       </div>
       
       {loading ? (
@@ -168,14 +189,7 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
               </tr>
             </thead>
             <tbody className="divide-y">
-              {properties
-                .filter(property => {
-                  if (filterStatus === 'all') return true;
-                  if (filterStatus === 'available') return !property.sold;
-                  if (filterStatus === 'sold') return property.sold;
-                  return true;
-                })
-                .map((property) => (
+              {filteredProperties.map((property) => (
                 <tr key={property.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
                     <div className="relative">
@@ -224,6 +238,7 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
                       variant="ghost"
                       onClick={() => toggleSoldStatus(property)}
                       className={property.sold ? "text-blue-600 hover:text-blue-800" : "text-green-600 hover:text-green-800"}
+                      title={property.sold ? "Marcar como disponível" : "Marcar como vendido"}
                     >
                       <BadgeCheck className="h-4 w-4" />
                     </Button>
@@ -231,6 +246,7 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
                       size="sm" 
                       variant="ghost"
                       onClick={() => onEdit(property)}
+                      title="Editar imóvel"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -239,6 +255,7 @@ export default function PropertiesTable({ onEdit }: PropertiesTableProps) {
                       variant="ghost" 
                       className="text-red-500 hover:text-red-700"
                       onClick={() => handleDelete(property.id)}
+                      title="Excluir imóvel"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
