@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
-import { Home } from 'lucide-react';
+import { Home, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Lista de e-mails autorizados
@@ -41,14 +41,20 @@ export default function Login() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth-callback`
+          redirectTo: `${window.location.origin}/auth-callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       
       if (error) {
         console.error('Google login error:', error);
         if (error.message.includes('provider is not enabled')) {
-          setError('O provedor Google não está habilitado no Supabase. Por favor, habilite-o no dashboard do Supabase.');
+          setError('O provedor Google não está habilitado no Supabase. Por favor, habilite-o no dashboard do Supabase e configure as credenciais do OAuth.');
+        } else if (error.message.includes('requested path is invalid')) {
+          setError('URL de redirecionamento inválido. Verifique se as URLs de Site e Redirecionamento estão configuradas no Supabase.');
         } else {
           setError(`Erro ao fazer login com Google: ${error.message}`);
         }
@@ -95,6 +101,7 @@ export default function Login() {
           
           {error && (
             <Alert variant="destructive" className="mb-4 text-left">
+              <AlertCircle className="h-4 w-4 mr-2" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -133,7 +140,7 @@ export default function Login() {
               <li>Vá para Authentication → Providers</li>
               <li>Habilite o provedor Google</li>
               <li>Configure as credenciais OAuth do Google</li>
-              <li>Configure as URLs de redirecionamento</li>
+              <li>Configure as URLs de redirecionamento em Authentication → URL Configuration</li>
             </ol>
           </div>
         </CardContent>
