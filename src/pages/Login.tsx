@@ -6,12 +6,14 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Home } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Lista de e-mails autorizados
 const AUTHORIZED_EMAILS = ['leandro@dharmaimoveis.com.br', 'admin@dharmaimoveis.com.br'];
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function Login() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -43,11 +46,18 @@ export default function Login() {
       });
       
       if (error) {
+        console.error('Google login error:', error);
+        if (error.message.includes('provider is not enabled')) {
+          setError('O provedor Google não está habilitado no Supabase. Por favor, habilite-o no dashboard do Supabase.');
+        } else {
+          setError(`Erro ao fazer login com Google: ${error.message}`);
+        }
         toast.error('Erro ao fazer login com Google', {
           description: error.message
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      setError(`Erro ao fazer login com Google: ${error.message}`);
       toast.error('Erro ao fazer login com Google');
       console.error('Google login error:', error);
     } finally {
@@ -83,6 +93,12 @@ export default function Login() {
             Acesso restrito para corretores autorizados
           </p>
           
+          {error && (
+            <Alert variant="destructive" className="mb-4 text-left">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <Button 
             type="button" 
             className="w-full flex items-center justify-center space-x-2 bg-white border text-gray-700 hover:bg-gray-100"
@@ -109,6 +125,17 @@ export default function Login() {
             </svg>
             <span className="ml-2">{loading ? 'Entrando...' : 'Entrar com Google'}</span>
           </Button>
+          
+          <div className="mt-4 text-sm text-gray-500">
+            <p>Para configurar o login com Google:</p>
+            <ol className="list-decimal text-left mx-4 mt-2 space-y-1">
+              <li>Acesse o dashboard do Supabase</li>
+              <li>Vá para Authentication → Providers</li>
+              <li>Habilite o provedor Google</li>
+              <li>Configure as credenciais OAuth do Google</li>
+              <li>Configure as URLs de redirecionamento</li>
+            </ol>
+          </div>
         </CardContent>
         <CardFooter>
           <div className="w-full text-center text-xs text-gray-500">
