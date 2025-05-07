@@ -15,7 +15,7 @@ import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 import AuthSetupInstructions from '@/components/auth/AuthSetupInstructions';
 
 // Lista de e-mails autorizados
-const AUTHORIZED_EMAILS = ['leandro@dharmaimoveis.com.br', 'admin@dharmaimoveis.com.br'];
+const AUTHORIZED_EMAILS = ['mario.igor1982@gmail.com', 'admin@dharmaimoveis.com.br'];
 
 export default function Login() {
   const [loading, setLoading] = useState(false);

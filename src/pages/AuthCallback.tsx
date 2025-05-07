@@ -8,7 +8,7 @@ import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 // Lista de e-mails autorizados - o primeiro será o master que pode autorizar o segundo
-const MASTER_EMAIL = 'leandro@dharmaimoveis.com.br';
+const MASTER_EMAIL = 'mario.igor1982@gmail.com';
 const SECOND_EMAIL = 'admin@dharmaimoveis.com.br';
 
 export default function AuthCallback() {
