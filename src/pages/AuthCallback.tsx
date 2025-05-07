@@ -7,8 +7,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-// Lista de e-mails autorizados
-const AUTHORIZED_EMAILS = ['leandro@dharmaimoveis.com.br', 'admin@dharmaimoveis.com.br'];
+// Lista de e-mails autorizados - o primeiro será o master que pode autorizar o segundo
+const MASTER_EMAIL = 'leandro@dharmaimoveis.com.br';
+const SECOND_EMAIL = 'admin@dharmaimoveis.com.br';
 
 export default function AuthCallback() {
   const navigate = useNavigate();
@@ -59,12 +60,19 @@ export default function AuthCallback() {
         if (data.session) {
           const userEmail = data.session.user.email;
           
-          if (AUTHORIZED_EMAILS.includes(userEmail || '')) {
-            toast.success('Login realizado com sucesso');
+          // Verificar se o e-mail é autorizado
+          if (userEmail === MASTER_EMAIL) {
+            // Este é o usuário master
+            toast.success('Login realizado com sucesso (Usuário Master)');
+            navigate('/admin');
+          } else if (userEmail === SECOND_EMAIL) {
+            // Este é o segundo usuário autorizado
+            toast.success('Login realizado com sucesso (Usuário Autorizado)');
             navigate('/admin');
           } else {
+            // E-mail não autorizado
             setError(`E-mail não autorizado: ${userEmail}`);
-            setErrorDetails('Apenas e-mails específicos têm permissão para acessar esta área. Entre em contato com o administrador.');
+            setErrorDetails('Apenas os dois e-mails configurados têm permissão para acessar esta área.');
             toast.error('Acesso não autorizado');
             await supabase.auth.signOut();
             setTimeout(() => navigate('/login'), 5000);
@@ -118,13 +126,12 @@ export default function AuthCallback() {
               </Button>
               
               <div className="text-sm border p-3 rounded-md bg-gray-50 mt-4">
-                <p className="font-semibold mb-2">Possíveis soluções:</p>
+                <p className="font-semibold mb-2">Instruções para acesso:</p>
                 <ol className="list-disc text-left mx-4 space-y-1 text-xs">
-                  <li>Verifique se o provedor Google está ativado no Supabase</li>
-                  <li>Confira se as credenciais OAuth do Google estão configuradas corretamente</li>
-                  <li>Verifique se as URLs de Site e Redirecionamento estão configuradas no Supabase</li>
-                  <li>Certifique-se que o domínio do seu site está autorizado no Google Console</li>
-                  <li>Verifique se a URI de redirecionamento está cadastrada no Google Console</li>
+                  <li>Apenas dois e-mails específicos têm permissão para acessar esta área</li>
+                  <li>O primeiro e-mail ({MASTER_EMAIL}) é o usuário master</li>
+                  <li>O segundo e-mail ({SECOND_EMAIL}) é o usuário autorizado</li>
+                  <li>Verifique se está utilizando um destes e-mails para login</li>
                 </ol>
               </div>
             </div>
