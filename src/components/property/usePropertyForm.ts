@@ -34,6 +34,7 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
   };
 
   const validateForm = () => {
+    console.log('Validating form with data:', formData);
     if (!formData.title) {
       toast.error('Por favor, adicione um título');
       return false;
@@ -50,13 +51,18 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       toast.error('Por favor, adicione pelo menos uma imagem');
       return false;
     }
+    console.log('Form validation passed');
     return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submission started');
     
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      console.log('Form validation failed');
+      return;
+    }
     
     setLoading(true);
     
@@ -64,17 +70,25 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       let image_url = formData.image_url;
       let allImageUrls: string[] = [];
       
+      console.log('Starting image upload process, images count:', images.length);
+      
       // Upload images if selected
       if (images.length > 0) {
+        console.log('Uploading images to storage...');
         const imagePromises = images.map(async (image, index) => {
+          console.log(`Uploading image ${index + 1}/${images.length}:`, image.name);
           const filePath = `${uuidv4()}-${image.name}`;
+          
           const { data: uploadData, error: uploadError } = await supabase.storage
             .from('property_images')
             .upload(filePath, image);
             
           if (uploadError) {
+            console.error('Image upload error:', uploadError);
             throw uploadError;
           }
+
+          console.log('Image uploaded successfully:', uploadData);
 
           // Get the public URL
           const { data: publicUrlData } = supabase.storage
@@ -82,17 +96,21 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
             .getPublicUrl(filePath);
             
           const imageUrl = publicUrlData.publicUrl;
+          console.log('Generated public URL:', imageUrl);
           
           // Set the featured image as the main image_url
           if (index === featuredImageIndex) {
             image_url = imageUrl;
+            console.log('Set as featured image URL:', imageUrl);
           }
           
           return imageUrl;
         });
         
         allImageUrls = await Promise.all(imagePromises);
+        console.log('All images uploaded successfully:', allImageUrls);
       } else {
+        console.log('No new images to upload, using existing images');
         allImageUrls = currentImages;
       }
       
@@ -102,25 +120,33 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
         images: allImageUrls,
       };
       
+      console.log('Preparing to save property data:', propertyData);
+      
       let response;
       
       if (property) {
+        console.log('Updating existing property with ID:', property.id);
         // Update existing property
         response = await supabase
           .from('properties')
           .update(propertyData)
           .eq('id', property.id);
       } else {
+        console.log('Inserting new property');
         // Insert new property
         response = await supabase
           .from('properties')
           .insert([propertyData]);
       }
       
+      console.log('Database operation response:', response);
+      
       if (response.error) {
+        console.error('Database operation error:', response.error);
         throw response.error;
       }
       
+      console.log('Property saved successfully');
       toast.success(property ? 'Imóvel atualizado com sucesso' : 'Imóvel adicionado com sucesso', {
         position: 'top-center',
         style: {
@@ -133,6 +159,12 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       
     } catch (error: any) {
       console.error('Error saving property:', error);
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       toast.error('Erro ao salvar imóvel', {
         description: error.message
       });
