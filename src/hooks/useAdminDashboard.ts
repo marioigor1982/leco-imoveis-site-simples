@@ -1,16 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
-import { toast } from '@/components/ui/sonner';
 import { Property } from '@/types/database';
 
-// List of authorized emails
-const AUTHORIZED_EMAILS = ['leandro@dharmaimoveis.com.br', 'admin@dharmaimoveis.com.br'];
-
 export const useAdminDashboard = () => {
-  const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
@@ -20,34 +13,9 @@ export const useAdminDashboard = () => {
   const [availableProperties, setAvailableProperties] = useState(0);
   const [totalLikes, setTotalLikes] = useState(0);
   const [topLikedProperties, setTopLikedProperties] = useState<Property[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      
-      if (!session) {
-        navigate('/login');
-      } else {
-        const userEmail = session.user.email;
-        if (!AUTHORIZED_EMAILS.includes(userEmail || '')) {
-          toast.error('Acesso não autorizado');
-          handleSignOut();
-        } else {
-          fetchDashboardData();
-        }
-      }
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        if (!session) {
-          navigate('/login');
-        }
-      }
-    );
+    fetchDashboardData();
 
     // Update date and time every minute
     const dateTimeInterval = setInterval(() => {
@@ -55,10 +23,9 @@ export const useAdminDashboard = () => {
     }, 60000);
 
     return () => {
-      authListener?.subscription?.unsubscribe();
       clearInterval(dateTimeInterval);
     };
-  }, [navigate]);
+  }, []);
 
   const fetchDashboardData = async () => {
     try {
@@ -92,11 +59,6 @@ export const useAdminDashboard = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
-  };
-
   const formatDateTime = (date: Date) => {
     return new Intl.DateTimeFormat('pt-BR', {
       dateStyle: 'full',
@@ -105,8 +67,6 @@ export const useAdminDashboard = () => {
   };
 
   return {
-    session,
-    loading,
     showForm,
     setShowForm,
     editingProperty,
@@ -119,7 +79,6 @@ export const useAdminDashboard = () => {
     availableProperties,
     totalLikes,
     topLikedProperties,
-    handleSignOut,
     fetchDashboardData,
     formatDateTime
   };

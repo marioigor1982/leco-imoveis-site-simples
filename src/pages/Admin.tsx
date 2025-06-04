@@ -13,7 +13,6 @@ export default function Admin() {
   const navigate = useNavigate();
   
   const {
-    loading,
     showForm,
     setShowForm,
     editingProperty,
@@ -31,7 +30,9 @@ export default function Admin() {
   } = useAdminDashboard();
 
   useEffect(() => {
+    console.log('Admin - Auth check:', { isAuthenticated, authLoading });
     if (!authLoading && !isAuthenticated) {
+      console.log('Redirecting to login - not authenticated');
       navigate('/login');
     }
   }, [isAuthenticated, authLoading, navigate]);
@@ -41,7 +42,7 @@ export default function Admin() {
     navigate('/login');
   };
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

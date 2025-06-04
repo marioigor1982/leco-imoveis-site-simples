@@ -28,27 +28,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const VALID_PASSWORD = 'Ndrake22';
 
   useEffect(() => {
+    console.log('AuthContext - Checking saved auth');
     // Verificar se há uma sessão salva no localStorage
     const savedAuth = localStorage.getItem('corretor_auth');
     if (savedAuth === 'true') {
+      console.log('AuthContext - Found saved auth, setting authenticated');
       setIsAuthenticated(true);
     }
     setLoading(false);
   }, []);
 
   const login = (username: string, password: string): boolean => {
+    console.log('AuthContext - Login attempt:', { username, password });
     if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+      console.log('AuthContext - Login successful');
       setIsAuthenticated(true);
       localStorage.setItem('corretor_auth', 'true');
       toast.success('Login realizado com sucesso!');
       return true;
     } else {
+      console.log('AuthContext - Login failed');
       toast.error('Usuário ou senha incorretos');
       return false;
     }
   };
 
   const logout = () => {
+    console.log('AuthContext - Logout');
     setIsAuthenticated(false);
     localStorage.removeItem('corretor_auth');
     toast.success('Logout realizado com sucesso');
