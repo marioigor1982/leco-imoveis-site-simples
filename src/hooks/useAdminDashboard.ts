@@ -7,7 +7,7 @@ export const useAdminDashboard = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
-  const [tab, setTab] = useState<'properties' | 'analytics'>('properties');
+  const [tab, setTab] = useState<'properties' | 'analytics' | 'dashboard'>('dashboard');
   const [totalProperties, setTotalProperties] = useState(0);
   const [soldProperties, setSoldProperties] = useState(0);
   const [availableProperties, setAvailableProperties] = useState(0);

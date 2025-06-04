@@ -1,45 +1,50 @@
 
 import React from 'react';
-import { LayoutDashboard, Heart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BarChart3, Home, Plus } from 'lucide-react';
 
 type AdminNavTabsProps = {
-  activeTab: 'properties' | 'analytics';
-  onTabChange: (tab: 'properties' | 'analytics') => void;
-  onAnalyticsClick: () => void;
+  activeTab: 'properties' | 'analytics' | 'dashboard';
+  onTabChange: (tab: 'properties' | 'analytics' | 'dashboard') => void;
+  onAnalyticsClick?: () => void;
 };
 
 const AdminNavTabs = ({ activeTab, onTabChange, onAnalyticsClick }: AdminNavTabsProps) => {
+  const handleTabClick = (tab: 'properties' | 'analytics' | 'dashboard') => {
+    onTabChange(tab);
+    if (tab === 'analytics' && onAnalyticsClick) {
+      onAnalyticsClick();
+    }
+  };
+
   return (
-    <div className="flex border-b mb-6">
-      <button
-        onClick={() => onTabChange('properties')}
-        className={`px-4 py-2 font-medium ${
-          activeTab === 'properties'
-            ? 'text-[#5e9188] border-b-2 border-[#5e9188]'
-            : 'text-gray-500'
-        }`}
+    <div className="flex flex-wrap gap-2 mb-6">
+      <Button
+        onClick={() => handleTabClick('properties')}
+        variant={activeTab === 'properties' ? 'default' : 'outline'}
+        className={`flex items-center gap-2 ${activeTab === 'properties' ? 'bg-[#5e9188] hover:bg-[#3e5954]' : ''}`}
       >
-        <div className="flex items-center gap-2">
-          <LayoutDashboard size={20} />
-          <span>Gerenciar Imóveis</span>
-        </div>
-      </button>
-      <button
-        onClick={() => {
-          onTabChange('analytics');
-          onAnalyticsClick();
-        }}
-        className={`px-4 py-2 font-medium ${
-          activeTab === 'analytics'
-            ? 'text-[#5e9188] border-b-2 border-[#5e9188]'
-            : 'text-gray-500'
-        }`}
+        <Plus size={18} />
+        Gerenciar Imóveis
+      </Button>
+      
+      <Button
+        onClick={() => handleTabClick('dashboard')}
+        variant={activeTab === 'dashboard' ? 'default' : 'outline'}
+        className={`flex items-center gap-2 ${activeTab === 'dashboard' ? 'bg-[#5e9188] hover:bg-[#3e5954]' : ''}`}
       >
-        <div className="flex items-center gap-2">
-          <Heart size={20} />
-          <span>Estatísticas</span>
-        </div>
-      </button>
+        <Home size={18} />
+        Dashboard
+      </Button>
+      
+      <Button
+        onClick={() => handleTabClick('analytics')}
+        variant={activeTab === 'analytics' ? 'default' : 'outline'}
+        className={`flex items-center gap-2 ${activeTab === 'analytics' ? 'bg-[#5e9188] hover:bg-[#3e5954]' : ''}`}
+      >
+        <BarChart3 size={18} />
+        Analytics
+      </Button>
     </div>
   );
 };

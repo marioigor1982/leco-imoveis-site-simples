@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminNavTabs from '@/components/admin/AdminNavTabs';
 import PropertyManagement from '@/components/admin/PropertyManagement';
+import PropertyDashboard from '@/components/admin/PropertyDashboard';
 import Analytics from '@/components/admin/Analytics';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
 import { useAuth } from '@/contexts/AuthContext';
@@ -71,7 +72,9 @@ export default function Admin() {
         onAnalyticsClick={fetchDashboardData}
       />
       
-      {tab === 'analytics' ? (
+      {tab === 'dashboard' ? (
+        <PropertyDashboard />
+      ) : tab === 'analytics' ? (
         <Analytics 
           totalProperties={totalProperties}
           availableProperties={availableProperties}
