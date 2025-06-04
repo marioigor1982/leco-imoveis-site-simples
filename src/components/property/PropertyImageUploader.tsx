@@ -29,10 +29,27 @@ const PropertyImageUploader = ({
     if (e.target.files) {
       const filesArray = Array.from(e.target.files);
       
+      // Verificar limite de quantidade
       if (filesArray.length > 20) {
         toast.error('Máximo de 20 imagens permitidas');
         return;
       }
+      
+      // Verificar tamanho de cada arquivo (5MB = 5 * 1024 * 1024 bytes)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const oversizedFiles = filesArray.filter(file => file.size > maxSize);
+      
+      if (oversizedFiles.length > 0) {
+        const fileNames = oversizedFiles.map(file => file.name).join(', ');
+        toast.error(`As seguintes imagens excedem o limite de 5MB: ${fileNames}`);
+        // Limpar o input
+        e.target.value = '';
+        return;
+      }
+      
+      // Mostrar informação sobre tamanhos dos arquivos válidos
+      const fileSizes = filesArray.map(file => `${file.name}: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+      console.log('Arquivos selecionados:', fileSizes);
       
       setImages(filesArray);
       
@@ -45,6 +62,8 @@ const PropertyImageUploader = ({
         };
         reader.readAsDataURL(filesArray[0]);
       }
+      
+      toast.success(`${filesArray.length} imagem(ns) selecionada(s) com sucesso`);
     }
   };
 
@@ -54,7 +73,7 @@ const PropertyImageUploader = ({
   
   return (
     <div className="space-y-2 md:col-span-2">
-      <Label htmlFor="images">Imagens (máx. 20)</Label>
+      <Label htmlFor="images">Imagens (máx. 20 | máx. 5MB cada)</Label>
       <Input
         id="images"
         type="file"
@@ -63,7 +82,9 @@ const PropertyImageUploader = ({
         onChange={handleImageChange}
         className="cursor-pointer"
       />
-      <p className="text-xs text-gray-500">Selecione até 20 imagens. A primeira imagem será usada como destaque.</p>
+      <p className="text-xs text-gray-500">
+        Selecione até 20 imagens, cada uma com no máximo 5MB. A primeira imagem será usada como destaque.
+      </p>
       
       {images.length > 0 && (
         <div className="mt-2">
@@ -76,6 +97,9 @@ const PropertyImageUploader = ({
                   alt={`Preview ${index + 1}`}
                   className="w-full h-24 object-cover"
                 />
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                  {(file.size / (1024 * 1024)).toFixed(2)}MB
+                </div>
                 <button
                   type="button"
                   onClick={() => setFeaturedImage(index)}

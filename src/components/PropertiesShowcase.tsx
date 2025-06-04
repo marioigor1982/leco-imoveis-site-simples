@@ -210,15 +210,34 @@ export default function PropertiesShowcase() {
                       alt={property.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        console.error('Error loading image:', property.image_url);
+                        console.error('Showcase image load error:', property.image_url);
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         const parent = target.parentElement;
                         if (parent) {
-                          parent.innerHTML = '<div class="w-full h-full bg-gray-200 flex items-center justify-center"><p class="text-gray-500">Erro ao carregar imagem</p></div>';
+                          parent.innerHTML = '<div class="w-full h-full bg-gray-200 flex items-center justify-center"><p class="text-gray-500 text-sm">Carregando imagem...</p></div>';
+                          
+                          // Tentar recarregar a imagem após um delay
+                          setTimeout(() => {
+                            const newImg = document.createElement('img');
+                            newImg.src = property.image_url + '?v=' + Date.now();
+                            newImg.className = 'w-full h-full object-cover';
+                            newImg.alt = property.title;
+                            newImg.onload = () => {
+                              if (parent) {
+                                parent.innerHTML = '';
+                                parent.appendChild(newImg);
+                              }
+                            };
+                            newImg.onerror = () => {
+                              if (parent) {
+                                parent.innerHTML = '<div class="w-full h-full bg-gray-200 flex items-center justify-center"><p class="text-gray-500 text-sm">Imagem não disponível</p></div>';
+                              }
+                            };
+                          }, 2000);
                         }
                       }}
-                      onLoad={() => console.log('Image loaded successfully:', property.image_url)}
+                      onLoad={() => console.log('Showcase image loaded successfully:', property.image_url)}
                     />
                     {property.sold && (
                       <div className="absolute inset-0 flex items-center justify-center">

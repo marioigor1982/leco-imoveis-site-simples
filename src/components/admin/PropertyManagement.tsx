@@ -21,6 +21,13 @@ const PropertyManagement = ({
   setEditingProperty,
   onUpdateComplete 
 }: PropertyManagementProps) => {
+  
+  const handleEditProperty = (property: Property) => {
+    console.log('PropertyManagement - handleEditProperty called with:', property.id);
+    setEditingProperty(property);
+    setShowForm(true);
+  };
+
   return (
     <div className="space-y-6">
       {!showForm ? (
@@ -39,7 +46,7 @@ const PropertyManagement = ({
             </Button>
           </div>
           <PropertiesTable 
-            onEdit={setEditingProperty} 
+            onEdit={handleEditProperty}
             onUpdateComplete={onUpdateComplete} 
           />
         </>
@@ -50,7 +57,10 @@ const PropertyManagement = ({
               {editingProperty ? 'Editar Imóvel' : 'Novo Imóvel'}
             </h2>
             <Button 
-              onClick={() => setShowForm(false)}
+              onClick={() => {
+                setShowForm(false);
+                setEditingProperty(null);
+              }}
               variant="outline"
             >
               Voltar para Lista

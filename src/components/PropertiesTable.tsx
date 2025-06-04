@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -99,6 +100,11 @@ export default function PropertiesTable({ onEdit, onUpdateComplete }: Properties
     }
   };
 
+  const handleEditClick = (property: Property) => {
+    console.log('Edit button clicked for property:', property.id);
+    onEdit(property);
+  };
+
   const filteredProperties = properties.filter((property) => {
     if (filterStatus === 'all') return true;
     if (filterStatus === 'available') return !property.sold;
@@ -182,6 +188,15 @@ export default function PropertiesTable({ onEdit, onUpdateComplete }: Properties
                           src={property.image_url} 
                           alt={property.title}
                           className="h-16 w-16 object-cover rounded"
+                          onError={(e) => {
+                            console.error('Table image load error:', property.image_url);
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const parent = target.parentElement;
+                            if (parent) {
+                              parent.innerHTML = '<div class="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs">Erro</div>';
+                            }
+                          }}
                         />
                       ) : (
                         <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-500">
@@ -229,8 +244,9 @@ export default function PropertiesTable({ onEdit, onUpdateComplete }: Properties
                     <Button 
                       size="sm" 
                       variant="ghost"
-                      onClick={() => onEdit(property)}
+                      onClick={() => handleEditClick(property)}
                       title="Editar imóvel"
+                      className="text-gray-600 hover:text-gray-800"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
