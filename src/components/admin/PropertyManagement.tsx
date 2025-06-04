@@ -4,22 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import PropertyForm from '@/components/PropertyForm';
 import PropertiesTable from '@/components/PropertiesTable';
-
-type Property = {
-  id: string;
-  title: string;
-  location: string;
-  type: string;
-  price: string;
-  details: string;
-  ref: string;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-  sold: boolean;
-  likes: number;
-  images?: string[];
-};
+import { Property } from '@/types/database';
 
 type PropertyManagementProps = {
   showForm: boolean;

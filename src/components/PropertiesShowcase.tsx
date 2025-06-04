@@ -3,22 +3,7 @@ import { ArrowRight, Loader2, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
-
-interface Property {
-  id: string;
-  title: string;
-  location: string;
-  type: string;
-  price: string;
-  details: string;
-  ref: string;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-  sold: boolean;
-  likes: number;
-  images?: string[];
-}
+import { Property } from '@/types/database';
 
 export default function PropertiesShowcase() {
   const [properties, setProperties] = useState<Property[]>([]);

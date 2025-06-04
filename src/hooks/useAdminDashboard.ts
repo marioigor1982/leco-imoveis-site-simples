@@ -3,25 +3,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '@/components/ui/sonner';
+import { Property } from '@/types/database';
 
 // List of authorized emails
 const AUTHORIZED_EMAILS = ['leandro@dharmaimoveis.com.br', 'admin@dharmaimoveis.com.br'];
-
-export type Property = {
-  id: string;
-  title: string;
-  location: string;
-  type: string;
-  price: string;
-  details: string;
-  ref: string;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-  sold: boolean;
-  likes: number;
-  images?: string[];
-};
 
 export const useAdminDashboard = () => {
   const [session, setSession] = useState<any>(null);

@@ -1,26 +1,10 @@
-
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
 import { Pencil, Trash2, Heart, BadgeCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
-interface Property {
-  id: string;
-  title: string;
-  location: string;
-  type: string;
-  price: string;
-  details: string;
-  ref: string;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-  sold: boolean;
-  likes: number;
-  images?: string[];
-}
+import { Property } from '@/types/database';
 
 type PropertiesTableProps = {
   onEdit: (property: Property) => void;

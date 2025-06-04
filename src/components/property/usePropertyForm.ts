@@ -3,22 +3,9 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
+import { Property, PropertyInsert } from '@/types/database';
 
-type PropertyData = {
-  id?: string;
-  title: string;
-  location: string;
-  type: string;
-  price: string;
-  details: string;
-  ref: string;
-  image_url?: string | null;
-  sold?: boolean;
-  likes?: number;
-  images?: string[];
-};
-
-export const usePropertyForm = (property: PropertyData | undefined, onComplete: () => void) => {
+export const usePropertyForm = (property: Property | undefined, onComplete: () => void) => {
   const [formData, setFormData] = useState({
     title: property?.title || '',
     location: property?.location || '',
@@ -109,7 +96,7 @@ export const usePropertyForm = (property: PropertyData | undefined, onComplete: 
         allImageUrls = currentImages;
       }
       
-      const propertyData = {
+      const propertyData: PropertyInsert = {
         ...formData,
         image_url,
         images: allImageUrls,
