@@ -6,6 +6,7 @@ import { toast } from '@/components/ui/sonner';
 import { Pencil, Trash2, Heart, BadgeCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Property } from '@/types/database';
+import ImageLoader from './ImageLoader';
 
 type PropertiesTableProps = {
   onEdit: (property: Property) => void;
@@ -184,19 +185,11 @@ export default function PropertiesTable({ onEdit, onUpdateComplete }: Properties
                   <td className="px-4 py-3">
                     <div className="relative">
                       {property.image_url ? (
-                        <img 
-                          src={property.image_url} 
+                        <ImageLoader
+                          src={property.image_url}
                           alt={property.title}
                           className="h-16 w-16 object-cover rounded"
-                          onError={(e) => {
-                            console.error('Table image load error:', property.image_url);
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            const parent = target.parentElement;
-                            if (parent) {
-                              parent.innerHTML = '<div class="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs">Erro</div>';
-                            }
-                          }}
+                          fallbackText="Erro"
                         />
                       ) : (
                         <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center text-gray-500">
