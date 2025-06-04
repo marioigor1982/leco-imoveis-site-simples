@@ -1,15 +1,19 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdminHeader from '@/components/admin/AdminHeader';
 import AdminNavTabs from '@/components/admin/AdminNavTabs';
 import PropertyManagement from '@/components/admin/PropertyManagement';
 import Analytics from '@/components/admin/Analytics';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Admin() {
+  const { isAuthenticated, loading: authLoading, logout } = useAuth();
+  const navigate = useNavigate();
+  
   const {
     loading,
-    session,
     showForm,
     setShowForm,
     editingProperty,
@@ -22,12 +26,22 @@ export default function Admin() {
     soldProperties,
     totalLikes,
     topLikedProperties,
-    handleSignOut,
     fetchDashboardData,
     formatDateTime
   } = useAdminDashboard();
 
-  if (loading) {
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, authLoading, navigate]);
+
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
+
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -36,6 +50,10 @@ export default function Admin() {
         </div>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect to login
   }
 
   return (

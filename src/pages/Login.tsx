@@ -2,56 +2,42 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, AlertCircle, User, LogIn } from 'lucide-react';
+import { Home, AlertCircle, LogIn } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/sonner';
-
-// Import our new components
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
-import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
-import AuthSetupInstructions from '@/components/auth/AuthSetupInstructions';
-
-// Lista de e-mails autorizados
-const AUTHORIZED_EMAILS = ['mario.igor1982@gmail.com', 'admin@dharmaimoveis.com.br'];
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Login() {
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>("login");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        const userEmail = data.session.user.email;
-        if (AUTHORIZED_EMAILS.includes(userEmail || '')) {
-          navigate('/admin');
-        } else {
-          await supabase.auth.signOut();
-          toast.error('Acesso não autorizado');
-        }
-      }
-    };
+    // Se já estiver autenticado, redirecionar para admin
+    if (isAuthenticated) {
+      navigate('/admin');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const success = login(username, password);
     
-    checkSession();
-  }, [navigate]);
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setError(null); // Clear any errors when switching tabs
-  };
-
-  const handleLoginSuccess = () => {
-    navigate('/auth-callback');
-  };
-
-  const handleRegisterSuccess = () => {
-    setActiveTab("login");
+    if (success) {
+      navigate('/admin');
+    } else {
+      setError('Usuário ou senha incorretos');
+    }
+    
+    setLoading(false);
   };
 
   return (
@@ -74,7 +60,7 @@ export default function Login() {
           </div>
           <CardTitle className="text-2xl font-bold text-center">Área do Corretor</CardTitle>
           <CardDescription className="text-center">
-            Acesse sua conta ou cadastre-se para gerenciar imóveis
+            Entre com suas credenciais para acessar o painel administrativo
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -85,45 +71,45 @@ export default function Login() {
             </Alert>
           )}
 
-          <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList className="grid w-full grid-cols-2 mb-4">
-              <TabsTrigger value="login" className="flex items-center gap-1">
-                <LogIn className="h-4 w-4" />
-                Entrar
-              </TabsTrigger>
-              <TabsTrigger value="register" className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                Cadastrar
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <LoginForm onSuccess={handleLoginSuccess} setError={setError} />
-
-              <div className="relative mt-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">ou continue com</span>
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <GoogleLoginButton setError={setError} />
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="register">
-              <RegisterForm onSuccess={handleRegisterSuccess} setError={setError} />
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Usuário</Label>
+              <Input
+                id="username"
+                type="text"
+                placeholder="Digite seu usuário"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Digite sua senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full flex items-center justify-center gap-2"
+              disabled={loading}
+            >
+              <LogIn className="h-4 w-4" />
+              {loading ? 'Entrando...' : 'Entrar'}
+            </Button>
+          </form>
         </CardContent>
         <CardFooter>
-          <div className="w-full text-center text-xs text-gray-500 space-y-4">
-            <p>Apenas corretores autorizados têm permissão para acessar a área administrativa</p>
-            
-            <AuthSetupInstructions />
+          <div className="w-full text-center text-xs text-gray-500">
+            <div className="text-sm border p-3 rounded-md bg-gray-50">
+              <p className="font-semibold">Acesso restrito ao corretor autorizado</p>
+              <p className="mt-2">Entre em contato para obter credenciais de acesso</p>
+            </div>
           </div>
         </CardFooter>
       </Card>

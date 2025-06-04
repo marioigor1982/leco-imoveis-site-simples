@@ -41,12 +41,6 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
           >
             Sobre Mim
           </Link>
-          <Link 
-            to="/financiamento" 
-            className={`font-medium hover:text-[#5e9188] transition-colors ${scrolled ? 'text-gray-700' : 'text-white'}`}
-          >
-            Financiamento
-          </Link>
           <div className="flex items-center">
             <span className={`text-sm ${scrolled ? 'text-gray-700' : 'text-white/80'}`}>
               Visitas: {visitas}
@@ -84,13 +78,6 @@ export const Header = ({ scrolled, isMenuOpen, toggleMenu, visitas }: HeaderProp
               onClick={() => toggleMenu()}
             >
               Sobre Mim
-            </Link>
-            <Link 
-              to="/financiamento" 
-              className={`font-medium hover:text-[#5e9188] transition-colors ${location.pathname === '/financiamento' ? 'text-[#5e9188]' : 'text-blue-900'}`}
-              onClick={() => toggleMenu()}
-            >
-              Financiamento
             </Link>
             <div className="flex justify-end items-center py-2">
               <div className="text-sm text-blue-700">
