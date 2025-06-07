@@ -4,8 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 import { Property, PropertyInsert } from '@/types/database';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const usePropertyForm = (property: Property | undefined, onComplete: () => void) => {
+  const { isAuthenticated } = useAuth();
+  
   const [formData, setFormData] = useState({
     title: property?.title || '',
     location: property?.location || '',
@@ -55,61 +58,10 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     return true;
   };
 
-  const checkAuthAndUser = async () => {
-    try {
-      console.log('Checking authentication...');
-      
-      // First check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        throw new Error('Erro ao verificar sessão. Faça login novamente.');
-      }
-
-      if (!session) {
-        console.error('No session found');
-        throw new Error('Usuário não autenticado. Faça login novamente.');
-      }
-
-      if (!session.user) {
-        console.error('No user in session');
-        throw new Error('Sessão inválida. Faça login novamente.');
-      }
-
-      console.log('User authenticated:', session.user.email);
-      
-      // Additional check: verify the session is still valid by making a test call
-      const { error: testError } = await supabase.from('properties').select('id').limit(1);
-      if (testError && testError.message.includes('JWT')) {
-        console.error('Session expired:', testError);
-        throw new Error('Sessão expirada. Faça login novamente.');
-      }
-
-      return session.user;
-    } catch (error: any) {
-      console.error('Auth check failed:', error);
-      
-      // If authentication fails, redirect to login
-      if (error.message.includes('não autenticado') || error.message.includes('expirada') || error.message.includes('inválida')) {
-        toast.error(error.message, {
-          description: 'Redirecionando para a página de login...'
-        });
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
-      }
-      
-      throw error;
-    }
-  };
-
   const uploadImageToStorage = async (image: File): Promise<string> => {
     try {
-      const user = await checkAuthAndUser();
-
       const fileExt = image.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const fileName = `test-user/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       
       console.log(`Uploading image: ${fileName}`);
       
@@ -142,6 +94,12 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     e.preventDefault();
     console.log('Form submission started');
     
+    // Verificar se está autenticado com as credenciais de teste
+    if (!isAuthenticated) {
+      toast.error('Você precisa estar logado para cadastrar imóveis');
+      return;
+    }
+    
     if (!validateForm()) {
       console.log('Form validation failed');
       return;
@@ -150,10 +108,6 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     setLoading(true);
     
     try {
-      // Check authentication first
-      const user = await checkAuthAndUser();
-      console.log('User verified for property creation:', user.email);
-
       let image_url = formData.image_url;
       let allImageUrls: string[] = [];
       
@@ -225,15 +179,9 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       
     } catch (error: any) {
       console.error('Error saving property:', error);
-      
-      if (error.message && (error.message.includes('não autenticado') || error.message.includes('expirada') || error.message.includes('inválida'))) {
-        // Already handled in checkAuthAndUser
-        return;
-      } else {
-        toast.error('Erro ao salvar imóvel', {
-          description: error.message || 'Erro desconhecido'
-        });
-      }
+      toast.error('Erro ao salvar imóvel', {
+        description: error.message || 'Erro desconhecido'
+      });
     } finally {
       setLoading(false);
     }
