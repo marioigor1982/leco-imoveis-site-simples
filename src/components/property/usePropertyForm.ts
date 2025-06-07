@@ -57,22 +57,49 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
 
   const checkAuthAndUser = async () => {
     try {
+      console.log('Checking authentication...');
+      
+      // First check if we have a session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
         console.error('Session error:', sessionError);
-        throw new Error('Erro ao verificar sessão: ' + sessionError.message);
+        throw new Error('Erro ao verificar sessão. Faça login novamente.');
       }
 
-      if (!session || !session.user) {
-        console.error('No session or user found');
+      if (!session) {
+        console.error('No session found');
         throw new Error('Usuário não autenticado. Faça login novamente.');
       }
 
+      if (!session.user) {
+        console.error('No user in session');
+        throw new Error('Sessão inválida. Faça login novamente.');
+      }
+
       console.log('User authenticated:', session.user.email);
+      
+      // Additional check: verify the session is still valid by making a test call
+      const { error: testError } = await supabase.from('properties').select('id').limit(1);
+      if (testError && testError.message.includes('JWT')) {
+        console.error('Session expired:', testError);
+        throw new Error('Sessão expirada. Faça login novamente.');
+      }
+
       return session.user;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Auth check failed:', error);
+      
+      // If authentication fails, redirect to login
+      if (error.message.includes('não autenticado') || error.message.includes('expirada') || error.message.includes('inválida')) {
+        toast.error(error.message, {
+          description: 'Redirecionando para a página de login...'
+        });
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      }
+      
       throw error;
     }
   };
@@ -199,14 +226,9 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     } catch (error: any) {
       console.error('Error saving property:', error);
       
-      if (error.message && error.message.includes('não autenticado')) {
-        toast.error('Sessão expirada. Faça login novamente.', {
-          description: 'Redirecionando para a página de login...'
-        });
-        // Redirect to login after a short delay
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
+      if (error.message && (error.message.includes('não autenticado') || error.message.includes('expirada') || error.message.includes('inválida'))) {
+        // Already handled in checkAuthAndUser
+        return;
       } else {
         toast.error('Erro ao salvar imóvel', {
           description: error.message || 'Erro desconhecido'

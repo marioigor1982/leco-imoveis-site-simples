@@ -113,6 +113,10 @@ export default function Login() {
           
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>Para criar uma conta, entre em contato com o administrador.</p>
+            <p className="mt-2 text-xs">
+              Email de teste: admin@exemplo.com<br />
+              Senha de teste: 123456
+            </p>
           </div>
         </CardContent>
       </Card>

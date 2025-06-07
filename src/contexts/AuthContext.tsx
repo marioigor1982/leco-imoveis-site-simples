@@ -31,23 +31,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('AuthContext - Setting up auth state listener');
     
-    // Set up auth state listener FIRST
+    // Get initial session
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting initial session:', error);
+        } else {
+          console.log('Initial session:', session?.user?.email || 'No session');
+          setSession(session);
+          setUser(session?.user ?? null);
+        }
+      } catch (error) {
+        console.error('Exception getting initial session:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getInitialSession();
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
+        console.log('Auth state changed:', event, session?.user?.email || 'No user');
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       }
     );
-
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
 
     return () => {
       console.log('Cleaning up auth subscription');
@@ -92,7 +104,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Logout error:', error);
         toast.error('Erro no logout');
       } else {
+        console.log('Logout successful');
         toast.success('Logout realizado com sucesso');
+        setSession(null);
+        setUser(null);
       }
     } catch (error) {
       console.error('Logout exception:', error);
