@@ -240,7 +240,7 @@ const PropertyCarousel = ({ properties, onLike, likedProperties, onPropertyClick
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .property-swiper .swiper-slide {
           height: auto;
         }
