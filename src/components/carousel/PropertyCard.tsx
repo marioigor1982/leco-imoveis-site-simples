@@ -20,8 +20,12 @@ const PropertyCard = ({ property, isLiked, onLike, onPropertyClick }: PropertyCa
   };
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group">
-      <div className="relative h-40">
+    <div 
+      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group h-full flex flex-col"
+      onClick={() => onPropertyClick(property)}
+    >
+      {/* Container da imagem com altura fixa */}
+      <div className="relative h-48 flex-shrink-0">
         {property.image_url ? (
           <div className="relative w-full h-full">
             <ImageLoader
@@ -43,6 +47,8 @@ const PropertyCard = ({ property, isLiked, onLike, onPropertyClick }: PropertyCa
             <p className="text-gray-500">Sem imagem</p>
           </div>
         )}
+        
+        {/* Tags sobrepostas na imagem */}
         <div className="absolute top-2 left-2 bg-[#253342] text-white text-xs font-semibold px-2 py-1 rounded">
           {property.type}
         </div>
@@ -51,25 +57,32 @@ const PropertyCard = ({ property, isLiked, onLike, onPropertyClick }: PropertyCa
         </div>
       </div>
       
-      <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-1">
+      {/* Container de informações com altura flexível */}
+      <div className="p-4 flex-grow flex flex-col">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3.5rem]">
           {property.title}
         </h3>
-        <p className="text-gray-600 mb-1 flex items-center text-sm">
-          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+        
+        <p className="text-gray-600 mb-2 flex items-center text-sm">
+          <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" />
           </svg>
-          {property.location}
+          <span className="line-clamp-1">{property.location}</span>
         </p>
-        <p className="text-gray-600 mb-3 text-sm line-clamp-2">
+        
+        <p className="text-gray-600 mb-3 text-sm line-clamp-2 flex-grow min-h-[2.5rem]">
           {property.details}
         </p>
-        <div className="flex justify-between items-center">
-          <span className="text-lg font-bold text-[#253342]">
-            {property.price}
-          </span>
+        
+        {/* Container de preço e ações */}
+        <div className="mt-auto">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-lg font-bold text-[#253342]">
+              {property.price}
+            </span>
+          </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center justify-between gap-2">
             <Button
               onClick={(e) => {
                 e.stopPropagation();
@@ -77,7 +90,7 @@ const PropertyCard = ({ property, isLiked, onLike, onPropertyClick }: PropertyCa
               }}
               size="sm"
               variant="ghost"
-              className="flex items-center gap-1 hover:bg-pink-50"
+              className="flex items-center gap-1 hover:bg-pink-50 flex-1"
             >
               <Heart
                 className={`w-4 h-4 ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
@@ -90,7 +103,7 @@ const PropertyCard = ({ property, isLiked, onLike, onPropertyClick }: PropertyCa
                 e.stopPropagation();
                 sendWhatsAppMessage(property);
               }}
-              className="bg-green-600 hover:bg-green-700 text-white flex items-center font-medium px-3 py-2 text-sm"
+              className="bg-green-600 hover:bg-green-700 text-white flex items-center font-medium px-3 py-2 text-sm flex-1"
               disabled={property.sold}
             >
               <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 24 24">

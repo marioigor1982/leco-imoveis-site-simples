@@ -6,6 +6,13 @@ const CarouselStyles = () => {
     <style>{`
       .property-swiper .swiper-slide {
         height: auto;
+        display: flex;
+      }
+      
+      .property-swiper .swiper-slide > div {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
       }
       
       .custom-pagination .swiper-pagination-bullet {

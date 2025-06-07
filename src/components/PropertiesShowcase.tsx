@@ -1,14 +1,16 @@
-
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Property } from '@/types/database';
 import PropertyCarousel from './PropertyCarousel';
+import PropertyModal from './PropertyModal';
 
 export default function PropertiesShowcase() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [likedProperties, setLikedProperties] = useState<Record<string, boolean>>({});
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchProperties();
@@ -90,7 +92,13 @@ export default function PropertiesShowcase() {
 
   const handlePropertyClick = (property: Property) => {
     console.log('Property clicked:', property);
-    // Pode implementar modal ou navegação aqui se necessário
+    setSelectedProperty(property);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedProperty(null);
   };
 
   if (loading) {
@@ -158,6 +166,15 @@ export default function PropertiesShowcase() {
           </a>
         </div>
       </div>
+
+      {/* Modal de detalhes do imóvel */}
+      <PropertyModal
+        property={selectedProperty}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        isLiked={selectedProperty ? likedProperties[selectedProperty.id] : false}
+        onLike={handleLike}
+      />
     </div>
   );
 }
