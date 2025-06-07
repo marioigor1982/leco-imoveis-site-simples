@@ -55,6 +55,43 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     return true;
   };
 
+  const uploadImageToStorage = async (image: File): Promise<string> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Usuário não autenticado');
+      }
+
+      const fileExt = image.name.split('.').pop();
+      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      
+      console.log(`Uploading image: ${fileName}`);
+      
+      const { error: uploadError } = await supabase.storage
+        .from('property_images')
+        .upload(fileName, image, {
+          cacheControl: '3600',
+          upsert: false
+        });
+        
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw new Error(`Erro no upload: ${uploadError.message}`);
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('property_images')
+        .getPublicUrl(fileName);
+        
+      console.log('Generated public URL:', publicUrl);
+      return publicUrl;
+      
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form submission started');
@@ -72,33 +109,14 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       
       console.log('Starting image upload process, images count:', images.length);
       
-      // Upload images if selected
       if (images.length > 0) {
         console.log('Uploading images to storage...');
-        const imagePromises = images.map(async (image, index) => {
+        
+        const uploadPromises = images.map(async (image, index) => {
           console.log(`Uploading image ${index + 1}/${images.length}:`, image.name);
-          const filePath = `${uuidv4()}-${image.name}`;
           
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('property_images')
-            .upload(filePath, image);
-            
-          if (uploadError) {
-            console.error('Image upload error:', uploadError);
-            throw uploadError;
-          }
-
-          console.log('Image uploaded successfully:', uploadData);
-
-          // Get the public URL
-          const { data: publicUrlData } = supabase.storage
-            .from('property_images')
-            .getPublicUrl(filePath);
-            
-          const imageUrl = publicUrlData.publicUrl;
-          console.log('Generated public URL:', imageUrl);
+          const imageUrl = await uploadImageToStorage(image);
           
-          // Set the featured image as the main image_url
           if (index === featuredImageIndex) {
             image_url = imageUrl;
             console.log('Set as featured image URL:', imageUrl);
@@ -107,7 +125,7 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
           return imageUrl;
         });
         
-        allImageUrls = await Promise.all(imagePromises);
+        allImageUrls = await Promise.all(uploadPromises);
         console.log('All images uploaded successfully:', allImageUrls);
       } else {
         console.log('No new images to upload, using existing images');
@@ -126,14 +144,12 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       
       if (property) {
         console.log('Updating existing property with ID:', property.id);
-        // Update existing property
         response = await supabase
           .from('properties')
           .update(propertyData)
           .eq('id', property.id);
       } else {
         console.log('Inserting new property');
-        // Insert new property
         response = await supabase
           .from('properties')
           .insert([propertyData]);
@@ -159,12 +175,6 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       
     } catch (error: any) {
       console.error('Error saving property:', error);
-      console.error('Error details:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint
-      });
       toast.error('Erro ao salvar imóvel', {
         description: error.message
       });
