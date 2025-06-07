@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/sonner';
+import { Home } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -65,6 +66,15 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="absolute top-4 left-4">
+        <Link to="/">
+          <Button variant="outline" className="flex items-center gap-2">
+            <Home size={18} />
+            Voltar ao site
+          </Button>
+        </Link>
+      </div>
+      
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-[#253342]">
@@ -77,13 +87,13 @@ export default function Login() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Usuário</Label>
               <Input
                 id="email"
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu-email@exemplo.com"
+                placeholder="Leandrocorretor"
                 required
                 disabled={isLoading}
               />
@@ -114,8 +124,8 @@ export default function Login() {
           <div className="mt-6 text-center text-sm text-gray-600">
             <p>Para criar uma conta, entre em contato com o administrador.</p>
             <p className="mt-2 text-xs">
-              Email de teste: admin@exemplo.com<br />
-              Senha de teste: 123456
+              Usuário de teste: Leandrocorretor<br />
+              Senha de teste: Ndrake22
             </p>
           </div>
         </CardContent>

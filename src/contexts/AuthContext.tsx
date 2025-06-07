@@ -28,6 +28,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Credenciais de teste
+  const TEST_CREDENTIALS = {
+    username: 'Leandrocorretor',
+    password: 'Ndrake22'
+  };
+
   useEffect(() => {
     console.log('AuthContext - Setting up auth state listener');
     
@@ -69,6 +75,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     console.log('AuthContext - Login attempt for:', email);
+    
+    // Verificar credenciais de teste primeiro
+    if (email === TEST_CREDENTIALS.username && password === TEST_CREDENTIALS.password) {
+      console.log('Test credentials matched, creating mock session');
+      
+      // Criar uma sessão mock para o usuário de teste
+      const mockUser = {
+        id: 'test-user-id',
+        email: 'leandrocorretor@teste.com',
+        aud: 'authenticated',
+        role: 'authenticated',
+        email_confirmed_at: new Date().toISOString(),
+        phone: '',
+        confirmation_sent_at: null,
+        confirmed_at: new Date().toISOString(),
+        recovery_sent_at: null,
+        last_sign_in_at: new Date().toISOString(),
+        app_metadata: {},
+        user_metadata: {},
+        identities: [],
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      } as User;
+
+      const mockSession = {
+        access_token: 'mock-access-token',
+        refresh_token: 'mock-refresh-token',
+        expires_in: 3600,
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        token_type: 'bearer',
+        user: mockUser
+      } as Session;
+
+      setUser(mockUser);
+      setSession(mockSession);
+      toast.success('Login realizado com sucesso!');
+      return true;
+    }
     
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
