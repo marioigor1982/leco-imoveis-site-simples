@@ -55,12 +55,31 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     return true;
   };
 
+  const checkAuthAndUser = async () => {
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Erro ao verificar sessão: ' + sessionError.message);
+      }
+
+      if (!session || !session.user) {
+        console.error('No session or user found');
+        throw new Error('Usuário não autenticado. Faça login novamente.');
+      }
+
+      console.log('User authenticated:', session.user.email);
+      return session.user;
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      throw error;
+    }
+  };
+
   const uploadImageToStorage = async (image: File): Promise<string> => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Usuário não autenticado');
-      }
+      const user = await checkAuthAndUser();
 
       const fileExt = image.name.split('.').pop();
       const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -104,6 +123,10 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
     setLoading(true);
     
     try {
+      // Check authentication first
+      const user = await checkAuthAndUser();
+      console.log('User verified for property creation:', user.email);
+
       let image_url = formData.image_url;
       let allImageUrls: string[] = [];
       
@@ -175,9 +198,20 @@ export const usePropertyForm = (property: Property | undefined, onComplete: () =
       
     } catch (error: any) {
       console.error('Error saving property:', error);
-      toast.error('Erro ao salvar imóvel', {
-        description: error.message
-      });
+      
+      if (error.message && error.message.includes('não autenticado')) {
+        toast.error('Sessão expirada. Faça login novamente.', {
+          description: 'Redirecionando para a página de login...'
+        });
+        // Redirect to login after a short delay
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+      } else {
+        toast.error('Erro ao salvar imóvel', {
+          description: error.message || 'Erro desconhecido'
+        });
+      }
     } finally {
       setLoading(false);
     }

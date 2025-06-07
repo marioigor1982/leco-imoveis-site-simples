@@ -1,117 +1,120 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, AlertCircle, LogIn } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/components/ui/sonner';
 
 export default function Login() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    // Se já estiver autenticado, redirecionar para admin
-    if (isAuthenticated) {
+    console.log('Login - Auth check:', { isAuthenticated, authLoading });
+    if (!authLoading && isAuthenticated) {
+      console.log('User already authenticated, redirecting to admin');
       navigate('/admin');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, authLoading, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const success = login(username, password);
     
-    if (success) {
-      navigate('/admin');
-    } else {
-      setError('Usuário ou senha incorretos');
+    if (!email || !password) {
+      toast.error('Por favor, preencha todos os campos');
+      return;
     }
+
+    setIsLoading(true);
+    console.log('Login form - Attempting login for:', email);
     
-    setLoading(false);
+    try {
+      const success = await login(email, password);
+      if (success) {
+        console.log('Login successful, redirecting to admin');
+        navigate('/admin');
+      }
+    } catch (error) {
+      console.error('Login form error:', error);
+      toast.error('Erro inesperado no login');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5e9188] mx-auto"></div>
+          <p className="mt-4">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return null; // Will redirect to admin
+  }
+
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center p-4"
-      style={{
-        backgroundImage: "url('https://imgs.search.brave.com/JJD01FDbiTKtGlutmVK2fCdPvCVqSOg1aK4-S3nfKUI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMtaW1hZ2VzLmxv/cGVzLmNvbS5ici9l/eHRlcm5hbC1saW5r/L3NodXR0ZXJzdG9j/a18yMzQ3Nzg4MDYz/LmpwZWc')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat"
-      }}
-    >
-      <Card className="w-full max-w-md shadow-lg bg-white/95 backdrop-blur-sm">
-        <CardHeader className="space-y-1">
-          <div className="flex justify-between items-center">
-            <Link to="/" className="flex items-center text-gray-600 hover:text-[#5e9188] transition-colors">
-              <Home className="mr-1 h-5 w-5" />
-              <span>Voltar ao site</span>
-            </Link>
-          </div>
-          <CardTitle className="text-2xl font-bold text-center">Área do Corretor</CardTitle>
-          <CardDescription className="text-center">
-            Entre com suas credenciais para acessar o painel administrativo
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-[#253342]">
+            Área do Corretor
+          </CardTitle>
+          <CardDescription>
+            Faça login para gerenciar seus imóveis
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive" className="mb-4 text-left">
-              <AlertCircle className="h-4 w-4 mr-2" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
+        <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Usuário</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                type="text"
-                placeholder="Digite seu usuário"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu-email@exemplo.com"
                 required
+                disabled={isLoading}
               />
             </div>
+            
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Digite sua senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                placeholder="Sua senha"
                 required
+                disabled={isLoading}
               />
             </div>
-            <Button 
-              type="submit" 
-              className="w-full flex items-center justify-center gap-2"
-              disabled={loading}
+            
+            <Button
+              type="submit"
+              className="w-full bg-[#5e9188] hover:bg-[#3e5954]"
+              disabled={isLoading}
             >
-              <LogIn className="h-4 w-4" />
-              {loading ? 'Entrando...' : 'Entrar'}
+              {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter>
-          <div className="w-full text-center text-xs text-gray-500">
-            <div className="text-sm border p-3 rounded-md bg-gray-50">
-              <p className="font-semibold">Acesso restrito ao corretor autorizado</p>
-              <p className="mt-2">Entre em contato para obter credenciais de acesso</p>
-            </div>
+          
+          <div className="mt-6 text-center text-sm text-gray-600">
+            <p>Para criar uma conta, entre em contato com o administrador.</p>
           </div>
-        </CardFooter>
+        </CardContent>
       </Card>
     </div>
   );

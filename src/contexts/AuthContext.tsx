@@ -1,11 +1,15 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/sonner';
 
 interface AuthContextType {
+  user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  login: (username: string, password: string) => boolean;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => Promise<void>;
   loading: boolean;
 }
 
@@ -20,48 +24,93 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Credenciais fixas
-  const VALID_USERNAME = 'Leandrocorretor';
-  const VALID_PASSWORD = 'Ndrake22';
-
   useEffect(() => {
-    console.log('AuthContext - Checking saved auth');
-    // Verificar se há uma sessão salva no localStorage
-    const savedAuth = localStorage.getItem('corretor_auth');
-    if (savedAuth === 'true') {
-      console.log('AuthContext - Found saved auth, setting authenticated');
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    console.log('AuthContext - Setting up auth state listener');
+    
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.email);
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => {
+      console.log('Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = (username: string, password: string): boolean => {
-    console.log('AuthContext - Login attempt:', { username, password });
-    if (username === VALID_USERNAME && password === VALID_PASSWORD) {
-      console.log('AuthContext - Login successful');
-      setIsAuthenticated(true);
-      localStorage.setItem('corretor_auth', 'true');
-      toast.success('Login realizado com sucesso!');
-      return true;
-    } else {
-      console.log('AuthContext - Login failed');
-      toast.error('Usuário ou senha incorretos');
+  const login = async (email: string, password: string): Promise<boolean> => {
+    console.log('AuthContext - Login attempt for:', email);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        console.error('Login error:', error);
+        toast.error('Erro no login: ' + error.message);
+        return false;
+      }
+
+      if (data.user && data.session) {
+        console.log('Login successful for:', data.user.email);
+        toast.success('Login realizado com sucesso!');
+        return true;
+      }
+
+      return false;
+    } catch (error: any) {
+      console.error('Login exception:', error);
+      toast.error('Erro inesperado no login');
       return false;
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     console.log('AuthContext - Logout');
-    setIsAuthenticated(false);
-    localStorage.removeItem('corretor_auth');
-    toast.success('Logout realizado com sucesso');
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+        toast.error('Erro no logout');
+      } else {
+        toast.success('Logout realizado com sucesso');
+      }
+    } catch (error) {
+      console.error('Logout exception:', error);
+      toast.error('Erro inesperado no logout');
+    }
   };
 
+  const isAuthenticated = !!session && !!user;
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      isAuthenticated, 
+      login, 
+      logout, 
+      loading 
+    }}>
       {children}
     </AuthContext.Provider>
   );
