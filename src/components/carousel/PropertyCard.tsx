@@ -3,7 +3,6 @@ import React from 'react';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Property } from '@/types/database';
-import ImageResizer from '@/components/ImageResizer';
 
 type PropertyCardProps = {
   property: Property;
@@ -28,13 +27,10 @@ const PropertyCard = ({ property, isLiked, onLike, onPropertyClick }: PropertyCa
       <div className="relative h-48 flex-shrink-0">
         {property.image_url ? (
           <div className="relative w-full h-full">
-            <ImageResizer
+            <img
               src={property.image_url}
               alt={property.title}
-              className="w-full h-full transition-transform duration-300 group-hover:scale-105"
-              fallbackText="Imagem indisponível"
-              width={730}
-              height={479}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
             {property.sold && (
               <div className="absolute inset-0 flex items-center justify-center">

@@ -2,7 +2,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Property } from '@/types/database';
-import ImageResizer from './ImageResizer';
 import { Heart, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -37,13 +36,10 @@ const PropertyModal = ({ property, isOpen, onClose, isLiked, onLike }: PropertyM
           <div className="relative rounded-lg overflow-hidden">
             {property.image_url ? (
               <div className="relative">
-                <ImageResizer
+                <img
                   src={property.image_url}
                   alt={property.title}
-                  className="w-full"
-                  fallbackText="Imagem indisponível"
-                  width={730}
-                  height={479}
+                  className="w-full h-64 object-cover"
                 />
                 {property.sold && (
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -93,13 +89,10 @@ const PropertyModal = ({ property, isOpen, onClose, isLiked, onLike }: PropertyM
                 <div className="grid grid-cols-2 gap-2">
                   {property.images.slice(1, 5).map((imageUrl, index) => (
                     <div key={index} className="rounded overflow-hidden">
-                      <ImageResizer
+                      <img
                         src={imageUrl}
                         alt={`${property.title} - Imagem ${index + 2}`}
-                        className="w-full"
-                        fallbackText="Imagem indisponível"
-                        width={365}
-                        height={239}
+                        className="w-full h-32 object-cover"
                       />
                     </div>
                   ))}
