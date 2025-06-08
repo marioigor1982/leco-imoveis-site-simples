@@ -2,7 +2,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Property } from '@/types/database';
-import ImageLoader from './ImageLoader';
+import ImageResizer from './ImageResizer';
 import { Heart, MapPin } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -34,25 +34,28 @@ const PropertyModal = ({ property, isOpen, onClose, isLiked, onLike }: PropertyM
         
         <div className="space-y-4">
           {/* Imagem Principal */}
-          <div className="relative h-64 w-full rounded-lg overflow-hidden">
+          <div className="relative rounded-lg overflow-hidden">
             {property.image_url ? (
-              <ImageLoader
-                src={property.image_url}
-                alt={property.title}
-                className="w-full h-full object-cover"
-                fallbackText="Imagem indisponível"
-              />
-            ) : (
-              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                <p className="text-gray-500">Sem imagem</p>
+              <div className="relative">
+                <ImageResizer
+                  src={property.image_url}
+                  alt={property.title}
+                  className="w-full"
+                  fallbackText="Imagem indisponível"
+                  width={730}
+                  height={479}
+                />
+                {property.sold && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-green-500/90 text-white font-bold py-2 px-6 transform -rotate-45 text-lg w-full text-center">
+                      VENDIDO
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-            
-            {property.sold && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-green-500/90 text-white font-bold py-2 px-6 transform -rotate-45 text-lg w-full text-center">
-                  VENDIDO
-                </div>
+            ) : (
+              <div className="w-full h-64 bg-gray-200 flex items-center justify-center">
+                <p className="text-gray-500">Sem imagem</p>
               </div>
             )}
           </div>
@@ -89,12 +92,14 @@ const PropertyModal = ({ property, isOpen, onClose, isLiked, onLike }: PropertyM
                 <h4 className="font-semibold mb-2 text-gray-700">Galeria:</h4>
                 <div className="grid grid-cols-2 gap-2">
                   {property.images.slice(1, 5).map((imageUrl, index) => (
-                    <div key={index} className="h-24 rounded overflow-hidden">
-                      <ImageLoader
+                    <div key={index} className="rounded overflow-hidden">
+                      <ImageResizer
                         src={imageUrl}
                         alt={`${property.title} - Imagem ${index + 2}`}
-                        className="w-full h-full object-cover"
+                        className="w-full"
                         fallbackText="Imagem indisponível"
+                        width={365}
+                        height={239}
                       />
                     </div>
                   ))}

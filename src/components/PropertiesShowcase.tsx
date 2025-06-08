@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,7 +29,7 @@ export default function PropertiesShowcase() {
         
       if (error) {
         console.error('Error fetching properties:', error);
-        throw error;
+        return;
       }
       
       console.log('Properties fetched:', data);
@@ -79,7 +80,8 @@ export default function PropertiesShowcase() {
         .eq('id', propertyId);
         
       if (error) {
-        throw error;
+        console.error('Error updating likes:', error);
+        return;
       }
       
       // Refresh properties to get updated likes count
