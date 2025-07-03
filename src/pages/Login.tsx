@@ -13,7 +13,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const { login, register, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,17 +34,27 @@ export default function Login() {
     }
 
     setIsLoading(true);
-    console.log('Login form - Attempting login for:', email);
     
     try {
-      const success = await login(email, password);
-      if (success) {
-        console.log('Login successful, redirecting to admin');
-        navigate('/admin');
+      if (isSignUp) {
+        console.log('Register form - Attempting register for:', email);
+        const success = await register(email, password);
+        if (success) {
+          setIsSignUp(false);
+          setEmail('');
+          setPassword('');
+        }
+      } else {
+        console.log('Login form - Attempting login for:', email);
+        const success = await login(email, password);
+        if (success) {
+          console.log('Login successful, redirecting to admin');
+          navigate('/admin');
+        }
       }
     } catch (error) {
-      console.error('Login form error:', error);
-      toast.error('Erro inesperado no login');
+      console.error('Auth form error:', error);
+      toast.error('Erro inesperado');
     } finally {
       setIsLoading(false);
     }
@@ -78,22 +89,22 @@ export default function Login() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-[#253342]">
-            Área do Corretor
+            {isSignUp ? 'Criar Conta' : 'Área do Corretor'}
           </CardTitle>
           <CardDescription>
-            Faça login para gerenciar seus imóveis
+            {isSignUp ? 'Cadastre-se para gerenciar imóveis' : 'Faça login para gerenciar seus imóveis'}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Usuário</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Leandrocorretor"
+                placeholder="seu@email.com"
                 required
                 disabled={isLoading}
               />
@@ -109,7 +120,11 @@ export default function Login() {
                 placeholder="Sua senha"
                 required
                 disabled={isLoading}
+                minLength={isSignUp ? 6 : undefined}
               />
+              {isSignUp && (
+                <p className="text-xs text-gray-500">Mínimo 6 caracteres</p>
+              )}
             </div>
             
             <Button
@@ -117,17 +132,33 @@ export default function Login() {
               className="w-full bg-[#5e9188] hover:bg-[#3e5954]"
               disabled={isLoading}
             >
-              {isLoading ? 'Entrando...' : 'Entrar'}
+              {isLoading ? 
+                (isSignUp ? 'Cadastrando...' : 'Entrando...') : 
+                (isSignUp ? 'Criar Conta' : 'Entrar')
+              }
             </Button>
           </form>
           
-          <div className="mt-6 text-center text-sm text-gray-600">
-            <p>Para criar uma conta, entre em contato com o administrador.</p>
-            <p className="mt-2 text-xs">
-              Usuário de teste: Leandrocorretor<br />
-              Senha de teste: Ndrake22
-            </p>
+          <div className="mt-6 text-center">
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setEmail('');
+                setPassword('');
+              }}
+              disabled={isLoading}
+              className="text-sm"
+            >
+              {isSignUp ? 'Já tem conta? Fazer login' : 'Não tem conta? Cadastre-se'}
+            </Button>
           </div>
+          
+          {!isSignUp && (
+            <div className="mt-4 text-center text-xs text-gray-600">
+              <p>Após o cadastro, aguarde aprovação do administrador para acessar o sistema.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
